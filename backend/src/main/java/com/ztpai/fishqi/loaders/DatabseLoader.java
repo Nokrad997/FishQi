@@ -12,11 +12,13 @@ public class DatabseLoader  implements CommandLineRunner{
 
     @Autowired
     public DatabseLoader(CustomerRepository customerRepository) {
+
         this.customerRepository = customerRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        this.customerRepository.save(new Customer("admin@admin.com", "admin", "pwd", true));
+        if(this.customerRepository.findByEmail("admin@admin.com") == null)
+            this.customerRepository.save(new Customer("admin@admin.com", "admin", "pwd", true));
     }
 }

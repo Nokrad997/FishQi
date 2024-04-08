@@ -20,7 +20,7 @@ public class FishQSet {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
-    private Users owner;
+    private Customer owner;
 
     @Column
     private String description;
