@@ -1,14 +1,24 @@
-package com.ztpai.fishqi.controllers;
+// package com.ztpai.fishqi.controllers;
 
-import com.ztpai.fishqi.repositories.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+// import com.ztpai.fishqi.entity.Customer;
+// import com.ztpai.fishqi.services.CustomerService;
 
-@Controller
-public class RegistrationController {
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestBody;
+// import org.springframework.web.bind.annotation.RequestMapping;
+// import org.springframework.web.bind.annotation.RestController;
 
-    @Autowired
-    private CustomerRepository customerRepository;
+// @RestController
+// @RequestMapping("api/customer")
+// public class RegistrationController {
 
+//     @Autowired
+//     private CustomerService customerService;
 
-}
+//     @PostMapping("/")
+//     public String registerCustomer(@RequestBody Customer customer) {
+//         customerService.registerCustomer(customer);
+//         return "Customer registered!";
+//     }
+// }
