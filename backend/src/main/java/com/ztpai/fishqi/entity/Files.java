@@ -1,7 +1,9 @@
 package com.ztpai.fishqi.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Files {
     
@@ -11,6 +13,4 @@ public class Files {
 
     @Column(nullable = false)
     private String ftp_path;
-
-    // Getters and Setters
 }

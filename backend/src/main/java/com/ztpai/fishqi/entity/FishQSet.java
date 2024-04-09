@@ -1,7 +1,9 @@
 package com.ztpai.fishqi.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class FishQSet {
     
@@ -24,6 +26,4 @@ public class FishQSet {
 
     @Column
     private String description;
-
-    // Getters and Setters
 }
