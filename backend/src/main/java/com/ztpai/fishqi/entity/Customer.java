@@ -1,7 +1,10 @@
 package com.ztpai.fishqi.entity;
 
+import lombok.Data;
+
 import jakarta.persistence.*;
 
+@Data
 @Entity
 public class Customer {
     
@@ -20,8 +23,8 @@ public class Customer {
 
     @Column(nullable = false)
     private Boolean is_admin;
-
-    protected Customer() {}
+    
+    public Customer() { }
     public Customer(String email, String username, String password, Boolean is_admin) {
         this.email = email;
         this.username = username;

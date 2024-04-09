@@ -1,7 +1,9 @@
 package com.ztpai.fishqi.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class FishQa {
     
@@ -20,6 +22,4 @@ public class FishQa {
     @OneToOne
     @JoinColumn(name = "file_id_back", nullable = false)
     private Files fileBack;
-
-    // Getters and Setters
 }
