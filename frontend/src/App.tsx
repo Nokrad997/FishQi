@@ -12,7 +12,6 @@ const App: React.FC = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
         <Route path="/login" element={<LoginForm />} />
         {/* Dodaj więcej tras do innych stron tutaj */}
       </Routes>
