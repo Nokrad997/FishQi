@@ -11,8 +11,9 @@ const LoginForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8080/api/customer/${username}`, {
+      const response = await fetch(`http://localhost:8080/api/customer/`, {
         method: 'GET',
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -29,8 +30,6 @@ const LoginForm: React.FC = () => {
     } catch (error) {
       console.error(error);
     }
-    
-    navigate('/');
   };
 
   return (
