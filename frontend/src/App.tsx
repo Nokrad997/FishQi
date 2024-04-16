@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './pages/home/Home';
+import Home from './components/Home';
 import LoginForm from './components/LoginForm';
-import Navbar from './components/navbar/Navbar';
+import Navbar from './components/Navbar';
 
 const App: React.FC = () => {
   return (
@@ -12,6 +12,9 @@ const App: React.FC = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<LoginForm />} />
+        {/* Dodaj więcej tras do innych stron tutaj */}
       </Routes>
     </Router>
   );

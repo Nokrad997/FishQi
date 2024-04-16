@@ -8,28 +8,11 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`http://localhost:8080/api/customer/`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Problem z pobraniem danych o użytkowniku');
-      }
-
-      const userData = await response.json();
-      console.log(userData);
-
-      // navigate('/');
-    } catch (error) {
-      console.error(error);
-    }
+    // Add your login logic here
+    // Redirect to another page after successful login
+    navigate('/');
   };
 
   return (

@@ -16,8 +16,7 @@
     "pnpm": "^8.15.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
-    "sass": "^1.75.0"
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.29.9",

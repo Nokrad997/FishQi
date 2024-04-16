@@ -1,3 +1,3 @@
 
 mvn clean install
-mvn spring-boot:run
+java -jar target/fishqi-0.0.1-SNAPSHOT.jar
