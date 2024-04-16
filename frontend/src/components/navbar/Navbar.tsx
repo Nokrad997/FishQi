@@ -1,11 +1,16 @@
 import React from 'react';
 import './Navbar.scss';
-const Navbar: React.FC = () => {
+
+interface Props {
+  onSignUpClick: () => void;
+}
+
+const Navbar: React.FC<Props> = ( {onSignUpClick} ) => {
   return (
     <nav className='navBar'>
       <div className='logRegLayout'>
         <button className='logRegButton'>Login</button>
-        <button className='logRegButton'>Register</button>
+        <button className='logRegButton' onClick={onSignUpClick}>Sign up</button>
       </div>
       
       <div className='logo'>
