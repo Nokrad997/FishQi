@@ -13,7 +13,7 @@ import com.ztpai.fishqi.repositories.CustomerRepository;
 
 @Service
 public class CustomerService {
-    
+
     private CustomerRepository customerRepository;
     // private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -21,14 +21,14 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public CustomerDTO getCustomerByID(Long userId){
+    public CustomerDTO getCustomerByID(Long userId) {
         Optional<Customer> optCus = this.customerRepository.findById(userId);
         Customer customer = optCus.orElseThrow();
 
         return convertToDTO(customer);
     }
 
-    public List<CustomerDTO> getAllCustomers(){
+    public List<CustomerDTO> getAllCustomers() {
         List<Customer> customers = this.customerRepository.findAll();
         List<CustomerDTO> customerDTOs = customers.stream().map(this::convertToDTO).toList();
 
@@ -36,7 +36,7 @@ public class CustomerService {
     }
 
     public CustomerDTO updateCustomer(CustomerDTO requestCustomer, Long userId) {
-        Optional<Customer> OptCus = this.customerRepository.findById(userId);   
+        Optional<Customer> OptCus = this.customerRepository.findById(userId);
         Customer customer = OptCus.orElseThrow();
 
         customer.setEmail(requestCustomer.getEmail());
@@ -56,15 +56,17 @@ public class CustomerService {
         return this.convertToDTO(savedCustomer);
     }
 
-    public void deleteCustomer(Long userId){
+    public void deleteCustomer(Long userId) {
         this.customerRepository.deleteById(userId);
     }
 
     public CustomerDTO registerCustomer(CustomerDTO customer) throws UserAlreadyExistsException {
-        if (this.emailExists(customer.getEmail())) {
+        if (this.emailExists(customer.getEmail()) || this.usernameExists(customer.getUsername())) {
+            
             throw new UserAlreadyExistsException("User with that email/username already exists");
         }
         Customer savedCustomer = this.customerRepository.save(this.convertToEntity(customer));
+
         return this.convertToDTO(savedCustomer);
     }
 
@@ -89,6 +91,10 @@ public class CustomerService {
     }
 
     private boolean emailExists(String email) {
-        return this.customerRepository.findByEmail(email) != null;
+        return !this.customerRepository.findByEmail(email).isEmpty();
+    }
+
+    private boolean usernameExists(String username) {
+        return !this.customerRepository.findByUsername(username).isEmpty();
     }
 }

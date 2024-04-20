@@ -7,18 +7,18 @@ const api = axios.create({
     },
 });
 
-const registration = axios.create({
-    baseURL: "http://localhost:8080/registration/",
+const register = axios.create({
+    baseURL: "http://localhost:8080/api/customer/register",
     headers: {
         "Content-Type": "application/json",
     },
 });
 
 const login = axios.create({
-    baseURL: "http://localhost:8080/login/",
+    baseURL: "http://localhost:8080/login",
     headers: {
         "Content-Type": "application/json",
     },
 });
 
-export default { api, registration, login }
+export { api, register, login };

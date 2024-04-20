@@ -6,15 +6,20 @@ import com.ztpai.fishqi.validators.interfaces.PasswordMatches;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 public class PasswordMatchesValidator
-  implements ConstraintValidator<PasswordMatches, Object> {
-    
-    @Override
-    public void initialize(PasswordMatches constraintAnnotation) {
-    }
-    @Override
-    public boolean isValid(Object obj, ConstraintValidatorContext context){
-        CustomerDTO user = (CustomerDTO) obj;
-        return user.getPassword().equals(user.getMatchingPassword());
-    }
+		implements ConstraintValidator<PasswordMatches, Object> {
+
+	@Override
+	public void initialize(PasswordMatches constraintAnnotation) {
+	}
+
+	@Override
+	public boolean isValid(Object obj, ConstraintValidatorContext context) {
+		CustomerDTO user = (CustomerDTO) obj;
+
+		return user.getPassword().equals(user.getMatchingPassword());
+	}
 }

@@ -2,7 +2,6 @@ package com.ztpai.fishqi.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ztpai.fishqi.DTO.CustomerDTO;
-import com.ztpai.fishqi.entity.Customer;
 import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
 import com.ztpai.fishqi.jsonViews.Views;
 import com.ztpai.fishqi.services.CustomerService;
@@ -47,7 +46,6 @@ public class CustomerController {
 
     }
     
-    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping(value = "/", produces = "application/json")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> retrieveAll() {
@@ -98,7 +96,7 @@ public class CustomerController {
         }
     }
 
-    @PostMapping("/register")
+    @PostMapping("/register/")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> registerUser(@Valid @RequestBody CustomerDTO customer) {
         try {

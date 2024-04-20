@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ztpai.fishqi.jsonViews.Views;
 import com.ztpai.fishqi.validators.interfaces.PasswordMatches;
 import com.ztpai.fishqi.validators.interfaces.ValidEmail;
+import com.ztpai.fishqi.validators.interfaces.ValidPassword;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -15,8 +17,8 @@ public class CustomerDTO {
     private Long user_id;
 
     @JsonView(Views.Public.class)
-    @ValidEmail
     @NotBlank(message = "Email is mandatory")
+    @ValidEmail
     private String email;
     
     @JsonView(Views.Public.class)
@@ -25,6 +27,7 @@ public class CustomerDTO {
     
     @JsonView(Views.Internal.class)
     @NotBlank(message = "Password is mandatory")
+    @ValidPassword
     private String password;
     
     @JsonView(Views.Internal.class)
@@ -32,6 +35,7 @@ public class CustomerDTO {
     private String matchingPassword;
     
     @JsonView(Views.Public.class)
+    @NotNull(message = "Is admin is mandatory")
     private Boolean is_admin;
 
 }
