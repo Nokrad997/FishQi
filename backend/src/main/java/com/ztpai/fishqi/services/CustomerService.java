@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.ztpai.fishqi.DTO.CustomerDTO;
 import com.ztpai.fishqi.entity.Customer;
+import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
 import com.ztpai.fishqi.repositories.CustomerRepository;
 
 @Service
@@ -22,11 +23,7 @@ public class CustomerService {
 
     public CustomerDTO getCustomerByID(Long userId){
         Optional<Customer> optCus = this.customerRepository.findById(userId);
-        Customer customer = optCus.get();
-
-        if(customer == null) {
-            throw new IllegalArgumentException("No user with id " + userId);
-        }
+        Customer customer = optCus.orElseThrow();
 
         return convertToDTO(customer);
     }
@@ -38,13 +35,9 @@ public class CustomerService {
         return customerDTOs;
     }
 
-    public String updateCustomer(Customer requestCustomer, Long userId) {
+    public CustomerDTO updateCustomer(CustomerDTO requestCustomer, Long userId) {
         Optional<Customer> OptCus = this.customerRepository.findById(userId);   
-        Customer customer = OptCus.get(); 
-
-        if(customer == null) {
-            throw new IllegalArgumentException("No user with id " + userId);
-        }
+        Customer customer = OptCus.orElseThrow();
 
         customer.setEmail(requestCustomer.getEmail());
         customer.setUsername(requestCustomer.getUsername());
@@ -53,18 +46,26 @@ public class CustomerService {
 
         this.customerRepository.save(customer);
 
-        return "działa";
+        return this.convertToDTO(customer);
     }
 
-    public String saveCustomer(Customer requestCustomer) {
+    public CustomerDTO saveCustomer(CustomerDTO requestCustomer) {
         // customer.setPassword(bCryptPasswordEncoder.encode(customer.getPassword()));
-        customerRepository.save(requestCustomer);
+        Customer savedCustomer = customerRepository.save(this.convertToEntity(requestCustomer));
 
-        return "działa";
+        return this.convertToDTO(savedCustomer);
     }
 
     public void deleteCustomer(Long userId){
         this.customerRepository.deleteById(userId);
+    }
+
+    public CustomerDTO registerCustomer(CustomerDTO customer) throws UserAlreadyExistsException {
+        if (this.emailExists(customer.getEmail())) {
+            throw new UserAlreadyExistsException("User with that email/username already exists");
+        }
+        Customer savedCustomer = this.customerRepository.save(this.convertToEntity(customer));
+        return this.convertToDTO(savedCustomer);
     }
 
     private CustomerDTO convertToDTO(Customer customer) {
@@ -77,5 +78,17 @@ public class CustomerService {
         return dto;
     }
 
-    
+    private Customer convertToEntity(CustomerDTO customerDTO) {
+        Customer customer = new Customer();
+        customer.setEmail(customerDTO.getEmail());
+        customer.setUsername(customerDTO.getUsername());
+        customer.setPassword(customerDTO.getPassword());
+        customer.setIs_admin(customerDTO.getIs_admin());
+
+        return customer;
+    }
+
+    private boolean emailExists(String email) {
+        return this.customerRepository.findByEmail(email) != null;
+    }
 }

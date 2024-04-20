@@ -1,5 +1,6 @@
 import React from 'react';
 import './RegisterModal.scss';
+import {api} from "../../api/axios";
 
 interface Props {
   isOpen: boolean;
@@ -19,7 +20,9 @@ export const RegisterModal: React.FC<Props> = ({ isOpen, onClose }) => {
         
         <img src='src/assets/icons/reject.png' alt='reject' className='reject-icon' width={40} onClick={onClose}/>
 
-        <form className='registrationForm'>
+        <form className='registrationForm' onSubmit={() => {
+          api.get()
+        }}>
           <h1>Registration</h1>
 
           <label htmlFor="username">Username</label>
