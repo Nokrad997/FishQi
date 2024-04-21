@@ -1,13 +1,10 @@
 package com.ztpai.fishqi.validators;
 
-import com.ztpai.fishqi.DTO.CustomerDTO;
+import com.ztpai.fishqi.DTO.RegistrationDTO;
 import com.ztpai.fishqi.validators.interfaces.PasswordMatches;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class PasswordMatchesValidator
 		implements ConstraintValidator<PasswordMatches, Object> {
@@ -18,7 +15,7 @@ public class PasswordMatchesValidator
 
 	@Override
 	public boolean isValid(Object obj, ConstraintValidatorContext context) {
-		CustomerDTO user = (CustomerDTO) obj;
+		RegistrationDTO user = (RegistrationDTO) obj;
 
 		return user.getPassword().equals(user.getMatchingPassword());
 	}

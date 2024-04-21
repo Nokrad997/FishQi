@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,22 +36,24 @@ public class CustomerController {
     public ResponseEntity<?> retrieve(@PathVariable Long userId) {
         try {
             CustomerDTO user = customerService.getCustomerByID(userId);
-            
+
             return ResponseEntity.ok(user);
         } catch (NoSuchElementException e) {
-            
+
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }
-    
+
     @GetMapping(value = "/", produces = "application/json")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> retrieveAll() {
         try {
             List<CustomerDTO> customers = this.customerService.getAllCustomers();
+            
             return ResponseEntity.ok(customers);
         } catch (Exception e) {
+            
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
@@ -63,24 +64,33 @@ public class CustomerController {
     public ResponseEntity<?> update(@PathVariable Long userId, @Valid @RequestBody CustomerDTO customer) {
         try {
             CustomerDTO updatedCustomer = customerService.updateCustomer(customer, userId);
+            
             return ResponseEntity.ok(updatedCustomer);
 
         } catch (NoSuchElementException e) {
+            
             return ResponseEntity.badRequest().body("No customer with given id");
 
         } catch (Exception e) {
+            
             return ResponseEntity.badRequest().build();
-
         }
 
     }
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
     @JsonView(Views.Public.class)
-    public ResponseEntity<String> store(@Valid @RequestBody CustomerDTO customer) {
-        customerService.saveCustomer(customer);
-
-        return ResponseEntity.ok("user is valid");
+    public ResponseEntity<?> store(@Valid @RequestBody CustomerDTO customer) {
+        try {
+            
+            return ResponseEntity.ok(this.customerService.saveCustomer(customer));
+        } catch (UserAlreadyExistsException e) {
+            
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping(value = "/{userId}", produces = "application/json")
@@ -95,18 +105,4 @@ public class CustomerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @PostMapping("/register/")
-    @JsonView(Views.Public.class)
-    public ResponseEntity<?> registerUser(@Valid @RequestBody CustomerDTO customer) {
-        try {
-            return ResponseEntity.ok(this.customerService.registerCustomer(customer));
-
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
 }

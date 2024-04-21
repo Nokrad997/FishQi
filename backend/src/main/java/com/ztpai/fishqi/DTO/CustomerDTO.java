@@ -1,17 +1,16 @@
 package com.ztpai.fishqi.DTO;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.ztpai.fishqi.entity.Customer;
 import com.ztpai.fishqi.jsonViews.Views;
-import com.ztpai.fishqi.validators.interfaces.PasswordMatches;
 import com.ztpai.fishqi.validators.interfaces.ValidEmail;
 import com.ztpai.fishqi.validators.interfaces.ValidPassword;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.Data;
 
 @Data
-@PasswordMatches
 public class CustomerDTO {
     @JsonView(Views.Public.class)
     private Long user_id;
@@ -30,12 +29,16 @@ public class CustomerDTO {
     @ValidPassword
     private String password;
     
-    @JsonView(Views.Internal.class)
-    @NotBlank(message = "matchingPassword is mandatory")
-    private String matchingPassword;
-    
     @JsonView(Views.Public.class)
-    @NotNull(message = "Is admin is mandatory")
-    private Boolean is_admin;
+    private Boolean is_admin = false;
 
+    public Customer convertToEntity() {
+        Customer customer = new Customer();
+        customer.setEmail(this.getEmail());
+        customer.setUsername(this.getUsername());
+        customer.setPassword(this.getPassword());
+        customer.setIs_admin(this.getIs_admin());
+
+        return customer;
+    }
 }
