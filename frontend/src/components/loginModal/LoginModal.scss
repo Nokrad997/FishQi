@@ -1,0 +1,56 @@
+.login-modal {
+    display: block;
+    background-color: rgba(128, 128, 128, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+  }
+  
+  .login-modal.hidden {
+    display: none;
+  }
+  
+  .login-card {
+    background-color: #fff;
+    width: 35vw;
+    height: 60vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    border-radius: 40px;
+  
+    .reject-icon {
+      position: absolute;
+      top: 1vh;
+      right: 1vw;
+      cursor: pointer;
+      z-index: 1002;
+    }
+  
+    .loginForm {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  
+      position: relative;
+      top: 5%;
+  
+      input {
+        margin: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        width: 15vw;
+        border: 1px solid #000;
+      }
+  
+      button {
+          margin-top: 2vh;
+      }
+    }
+  }
+  
