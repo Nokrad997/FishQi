@@ -8,31 +8,42 @@ import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Jwts.SIG;
 
 @Component
 public class JwtTokenUtil {
     private SecretKey secretKey = Jwts.SIG.HS256.key().build();
 
-    public String generateToken(String username) {
+    public String generateToken(String email, boolean isAdmin) {
+        String claims = isAdmin ? "admin" : "user";
+        long expirationTime = 1000 * 60 * 5;
+
+        return Jwts.builder().subject(email).claim("role", claims).issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime)).signWith(secretKey).compact();
+    }
+
+    public String generateRefreshToken(String email) {
         long expirationTime = 1000 * 60 * 60;
-        return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(this.secretKey, SIG.HS256)
-                .compact();
+
+        return Jwts.builder().subject(email).issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime)).signWith(secretKey).compact();
     }
 
     public Boolean validateToken(String token, String username) {
-       Jws<Claims> claims;
-       try{
-        claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-        String subject = claims.getsub
-        return username.equals(claims.getPayload().getExpiration().before(new Date()));
-       }
+       final String subject = this.getSubjectFromToken(token);
+
+       return (username.equals(subject) && this.isTokenExpired(token));
+    }
+
+    public String getSubjectFromToken(String token) {
+        return this.getClaimsFromToken(token).getSubject();
+    }
+
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parser().decryptWith(this.secretKey).build().parseSignedClaims(token).getPayload();
+    }
+
+    public boolean isTokenExpired(String token) {
+        return !this.getClaimsFromToken(token).getExpiration().before(new Date());
     }
 }

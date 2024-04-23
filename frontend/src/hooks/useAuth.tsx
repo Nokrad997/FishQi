@@ -6,6 +6,7 @@ import LoginData from '../interfaces/LoginData'
 const useAuth = () => {
     const registerCustomer = async (userData: RegistrationData) => {
         try {
+            console.log(userData);
             const response = await registration(userData);
             console.log(response);
         } catch(error) {
