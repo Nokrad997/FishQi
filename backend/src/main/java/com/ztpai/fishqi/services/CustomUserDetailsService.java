@@ -23,11 +23,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             Customer customer = customerRepository.findByEmail(username);
+            String auth = customer.getIs_admin() ? "ADMIN" : "USER";
             
             return User.builder()
                     .username(customer.getEmail())
                     .password(customer.getPassword())
-                    .authorities("USER")
+                    .authorities(auth)
                     .build();
         } catch (Exception e) {
             

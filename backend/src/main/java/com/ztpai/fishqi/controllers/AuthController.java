@@ -1,44 +1,56 @@
 package com.ztpai.fishqi.controllers;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ztpai.fishqi.DTO.JwtDTO;
-import com.ztpai.fishqi.DTO.LoginDTO;
-import com.ztpai.fishqi.config.JwtTokenUtil;
-import com.ztpai.fishqi.entity.Customer;
-import com.ztpai.fishqi.services.AuthService;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import com.ztpai.fishqi.DTO.LoginDTO;
+import com.ztpai.fishqi.DTO.RefreshDTO;
+import com.ztpai.fishqi.exceptions.ExpiredRefreshTokenException;
+import com.ztpai.fishqi.jsonViews.Views;
+import com.ztpai.fishqi.services.AuthService;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-    private final JwtTokenUtil jwtTokenUtil;
 
-    public AuthController(AuthService authService, JwtTokenUtil jwtTokenUtil) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @PostMapping(value = "/login/", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> loginCustomer(@RequestBody LoginDTO customer) {
         try {
-            Customer signedInCustomer = this.authService.loginCustomer(customer);
-            if (signedInCustomer.getUser_id() != null) {
-                String access = this.jwtTokenUtil.generateToken(signedInCustomer.getEmail(), signedInCustomer.getIs_admin());
-                String refresh = this.jwtTokenUtil.generateRefreshToken(signedInCustomer.getEmail());
-
-                return ResponseEntity.ok(new JwtDTO(access, refresh));    
-            }
             
-            return ResponseEntity.badRequest().body("Wrong email or password");
-        }catch (Error e) {
-           
+            return ResponseEntity.ok(this.authService.loginCustomer(customer));
+        } catch (BadCredentialsException e) {
+            
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            
+            return ResponseEntity.internalServerError().body("an erroc occured");
+        }
+    }
+
+    @JsonView(Views.Public.class)
+    @PostMapping(value = "/refresh", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshDTO refresh) {
+        try {
+
+            return ResponseEntity.ok().body(this.authService.refreshAccessToken(refresh));
+        } catch (ExpiredRefreshTokenException e) {
+            
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }

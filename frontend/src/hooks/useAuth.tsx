@@ -18,6 +18,10 @@ const useAuth = () => {
         try {
             const response = await login(userData);
             console.log(response);
+            localStorage.setItem("access", response.accessToken);
+            localStorage.setItem("refresh", response.refreshToken);
+
+            return true;
         } catch (error) {
             throw new Error("Login failed");
         }

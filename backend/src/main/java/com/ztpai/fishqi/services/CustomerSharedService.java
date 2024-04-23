@@ -36,11 +36,13 @@ public class CustomerSharedService {
     }
 
     public boolean emailExists(String email) {
-        return this.customerRepository.findByEmail(email).getEmail() != null;
+        Customer customer = this.customerRepository.findByEmail(email);
+        return customer != null && customer.getEmail() != null;
     }
-
+    
     public boolean usernameExists(String username) {
-        return this.customerRepository.findByUsername(username).getEmail() != null;
+        Customer customer = this.customerRepository.findByUsername(username);
+        return customer != null && customer.getEmail() != null;
     }
 
     public Customer saveCustomer(Customer customer) {
@@ -58,7 +60,7 @@ public class CustomerSharedService {
     public Boolean decodePassword(String password, String email) {
         Customer customer = this.customerRepository.findByEmail(email);
 
-        if (customer.getEmail() == null) {
+        if (customer == null || customer.getEmail() == null) {
             return false;
         }
 

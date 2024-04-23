@@ -24,7 +24,7 @@ public class Customer {
     private String password;
 
     @Column(nullable = false)
-    private Boolean is_admin;
+    private Boolean is_admin = false;
 
     public Customer() {
     }

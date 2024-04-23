@@ -10,18 +10,18 @@ type RegistrationPrimise = {
 }
 
 type LoginPromise = {
-    access: string;
-    refresh: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 export async function registration(customerData: RegistrationData): Promise<RegistrationPrimise> {
-    const response = await signUp.post("/", customerData);
+    const response = await signUp.post("", customerData);
 
     return response.data;
 }
 
 export async function login(customerData: LoginData): Promise<LoginPromise> {
-    const response = await signIn.post("/", customerData);
+    const response = await signIn.post("", customerData);
 
     return response.data;
 }
