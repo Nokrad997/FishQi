@@ -27,12 +27,22 @@ public class CustomerSharedService {
         return this.customerRepository.findAll();
     }
 
-    public boolean emailExists(String email) {
-        return !this.customerRepository.findByEmail(email).isEmpty();
+    public Customer getCustomerByEmail(String email) {
+        try {
+            return this.customerRepository.findByEmail(email);
+        } catch (Exception e) {
+            return new Customer();
+        }
     }
 
+    public boolean emailExists(String email) {
+        Customer customer = this.customerRepository.findByEmail(email);
+        return customer != null && customer.getEmail() != null;
+    }
+    
     public boolean usernameExists(String username) {
-        return !this.customerRepository.findByUsername(username).isEmpty();
+        Customer customer = this.customerRepository.findByUsername(username);
+        return customer != null && customer.getEmail() != null;
     }
 
     public Customer saveCustomer(Customer customer) {
@@ -48,12 +58,12 @@ public class CustomerSharedService {
     }
 
     public Boolean decodePassword(String password, String email) {
-        List<Customer> customers = this.customerRepository.findByEmail(email);
+        Customer customer = this.customerRepository.findByEmail(email);
 
-        if(customers.isEmpty()) {
+        if (customer == null || customer.getEmail() == null) {
             return false;
         }
 
-        return this.passwordEncoder.matches(password, customers.get(0).getPassword());
+        return this.passwordEncoder.matches(password, customer.getPassword());
     }
 }

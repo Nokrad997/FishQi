@@ -30,7 +30,7 @@ public class CustomerDTO {
     private String password;
     
     @JsonView(Views.Public.class)
-    private Boolean is_admin = false;
+    private Boolean is_admin;
 
     public Customer convertToEntity() {
         Customer customer = new Customer();

@@ -2,6 +2,7 @@ package com.ztpai.fishqi.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,11 +12,11 @@ import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
 import com.ztpai.fishqi.jsonViews.Views;
 import com.ztpai.fishqi.services.RegistrationService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/register")
+@RequestMapping("/customer")
 public class RegistrationController {
     private final RegistrationService registrationService;
     
@@ -23,7 +24,7 @@ public class RegistrationController {
         this.registrationService = registrationService;
     }
 
-    @PostMapping("/")
+    @PostMapping("/register")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> registerCustomer(@Valid @RequestBody RegistrationDTO customer) {
         try {
