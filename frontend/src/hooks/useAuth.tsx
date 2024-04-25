@@ -6,24 +6,25 @@ import LoginData from '../interfaces/LoginData'
 const useAuth = () => {
     const registerCustomer = async (userData: RegistrationData) => {
         try {
-            console.log(userData);
-            const response = await registration(userData);
-            console.log(response);
-        } catch(error) {
-            throw new Error('Registration failed');
+            await registration(userData);
+
+            return true;
+        } catch (error: any) {
+            console.log("registration failed: ", error)
+            throw new Error(error.message || "registration failed");
         }
     };
 
     const loginCustomer = async (userData: LoginData) => {
         try {
             const response = await login(userData);
-            console.log(response);
             localStorage.setItem("access", response.accessToken);
             localStorage.setItem("refresh", response.refreshToken);
 
             return true;
-        } catch (error) {
-            throw new Error("Login failed");
+        } catch (error: any) {
+            console.error("Login failed:", error);
+            throw new Error(error.message || "Login failed");
         }
     }
 

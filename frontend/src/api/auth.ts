@@ -15,13 +15,57 @@ type LoginPromise = {
 }
 
 export async function registration(customerData: RegistrationData): Promise<RegistrationPrimise> {
-    const response = await signUp.post("", customerData);
+    try {
+        const response = await signUp.post("", customerData);
 
-    return response.data;
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            console.error("Server responded with an error:", error.response.status, error.data);
+
+            if (error.response.data.errorMessages) {
+
+                throw new Error(`Error during registration: ${error.response.data.errorMessages}`);
+            } else {
+
+                throw new Error(`Error during registration: ${error.response.data}`);
+            }
+        } else if (error.request) {
+            console.error("No response received:", error.request);
+
+            throw new Error("No response from server during registration");
+        } else {
+            console.error("Error setting up the request:", error.message);
+
+            throw new Error("Error setting up registration request");
+        }
+    }
 }
 
 export async function login(customerData: LoginData): Promise<LoginPromise> {
-    const response = await signIn.post("", customerData);
+    try {
+        const response = await signIn.post("", customerData);
 
-    return response.data;
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            console.error("Server responded with an error:", error.response.status, error.response.data);
+
+            if (error.response.data.errorMessages) {
+
+                throw new Error(`Error during registration: ${error.response.data.errorMessages}`);
+            } else {
+
+                throw new Error(`Error during registration: ${error.response.data}`);
+            }
+        } else if (error.request) {
+            console.error("No response received:", error.request);
+
+            throw new Error("No response from server during login");
+        } else {
+            console.error("Error setting up the request:", error.message);
+
+            throw new Error("Error setting up login request");
+        }
+    }
 }

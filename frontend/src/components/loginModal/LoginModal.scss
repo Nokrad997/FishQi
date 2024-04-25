@@ -8,7 +8,11 @@
     height: 100%;
     z-index: 1000;
   }
-  
+  .error-message {
+    color: red;
+    margin-top: 10px;
+}
+
   .login-modal.hidden {
     display: none;
   }

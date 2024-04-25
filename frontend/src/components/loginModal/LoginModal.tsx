@@ -4,61 +4,70 @@ import './LoginModal.scss';
 import useAuth from '../../hooks/useAuth';
 
 interface Props {
-  isOpen: boolean;
-  onClose: () => void;
+	isOpen: boolean;
+	onClose: () => void;
 }
 
 export const LoginModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string>("");
-  const { loginCustomer } = useAuth();
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [error, setError] = useState<string>("");
+	const { loginCustomer } = useAuth();
 
-  if (!isOpen) {
-    return null;
-  }
+	if (!isOpen) {
+		return null;
+	}
 
-  const submitHandler = async (e: React.FormEvent) => {
-    e.preventDefault();
+	const submitHandler = async (e: React.FormEvent) => {
+		e.preventDefault();
+		try {
+			const loginSuccess = await loginCustomer({ email, password });
+			if (loginSuccess) {
+				errorHandler();
+				onClose();
+			}
+		} catch (error: any) {
+			errorHandler();
+			setError(error.message);
+		}
+	};
 
-    try {
-      await loginCustomer({email, password});
+	const errorHandler = () => {
+		setEmail("");
+		setPassword("");
+	};
 
-    } catch (error: any) {
-      setError(error.message);
-    }
-  };
+	return (
+		<div className="login-modal">
+			<div className="login-card">
 
-  return (
-    <div className="login-modal">
-      <div className="login-card">
+				<img src='src/assets/icons/reject.png' alt='reject' className='reject-icon' width={40} onClick={onClose} />
 
-        <img src='src/assets/icons/reject.png' alt='reject' className='reject-icon' width={40} onClick={onClose} />
+				<form className='loginForm' onSubmit={submitHandler}>
+					<h1>Login</h1>
 
-        <form className='loginForm' onSubmit={submitHandler}>
-          <h1>Login</h1>
+					<label htmlFor="email">Email</label>
+					<input
+						type="text"
+						id='email'
+						placeholder="Enter Email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						required
+					/>
+					<label htmlFor="password">Password</label>
+					<input
+						type="password"
+						placeholder="Enter Password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						required
+					/>
+					{error && <div className="error-message">{error}</div>}
 
-          <label htmlFor="email">Email</label>
-          <input
-            type="text"
-            id='email'
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <button>Sing In</button>
-        </form>
-      </div>
-    </div>
-  );
+					<button>Sing In</button>
+				</form>
+			</div>
+		</div>
+	);
 };
