@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .headers(AbstractHttpConfigurer::disable)
                 // .authorizeHttpRequests(auth -> auth
                 // .requestMatchers("auth/login", "auth/refresh").permitAll()
-                // .anyRequest().permitAll())
+                // .anyRequest().permitAll());
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
