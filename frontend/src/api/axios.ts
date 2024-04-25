@@ -72,12 +72,14 @@ api.interceptors.response.use(
 
                         console.error("nie ma autoryzacji");
                     } else {
-
                         console.error("Nie udało się odświeżyć tokena z innego powodu", refreshError);
+                        localStorage.removeItem("access");
+                        localStorage.removeItem("refresh");
                     }
                 } else {
-
                     console.error("Unhandled error type during token refresh", refreshError);
+                    localStorage.removeItem("access");
+                    localStorage.removeItem("refresh");
                 }
             }
         }

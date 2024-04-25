@@ -44,6 +44,7 @@ export async function registration(customerData: RegistrationData): Promise<Regi
 
 export async function login(customerData: LoginData): Promise<LoginPromise> {
     try {
+        console.log("customerData", customerData);
         const response = await signIn.post("", customerData);
 
         return response.data;
@@ -53,10 +54,10 @@ export async function login(customerData: LoginData): Promise<LoginPromise> {
 
             if (error.response.data.errorMessages) {
 
-                throw new Error(`Error during registration: ${error.response.data.errorMessages}`);
+                throw new Error(`Error during login: ${error.response.data.errorMessages}`);
             } else {
 
-                throw new Error(`Error during registration: ${error.response.data}`);
+                throw new Error(`Error during login: ${error.response.data}`);
             }
         } else if (error.request) {
             console.error("No response received:", error.request);

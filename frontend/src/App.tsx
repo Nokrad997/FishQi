@@ -7,28 +7,48 @@ import Home from './pages/home/Home';
 import Navbar from './components/navbar/Navbar';
 import { RegisterModal } from './components/registerModal/RegisterModal';
 import { LoginModal } from './components/loginModal/LoginModal';
+import { AccountModal } from './components/AccountModal/AccountModal';
 
 const App: React.FC = () => {
 
-  const [isRegisterModalVisible, setIsRegisterModalVisible] = useState(false);
-  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
-  const toggleRegistrationModal = () => {
-    setIsRegisterModalVisible(!isRegisterModalVisible);
-  }
-  const toggleLoginModal = () => {
-    setIsLoginModalVisible(!isLoginModalVisible);
-  }
+	const [modalVisibility, setModalVisibility] = useState<{
+		registerModal: boolean;
+		loginModal: boolean;
+		accountModal: boolean;
+		createSetModal: boolean;
+	}>({
+		registerModal: false,
+		loginModal: false,
+		accountModal: false,
+		createSetModal: false,
+	});
 
-  return (
-    <Router>      
-      <Navbar onSignUpClick={toggleRegistrationModal} onSignInClick={toggleLoginModal}/>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-      <RegisterModal isOpen={isRegisterModalVisible} onClose={toggleRegistrationModal}/>
-      <LoginModal isOpen={isLoginModalVisible} onClose={toggleLoginModal} />
-    </Router>
-  );
+	const toggleModal = (modalName: keyof typeof modalVisibility): void => {
+		setModalVisibility((prevState) => ({
+			...prevState,
+			[modalName]: !prevState[modalName],
+		}));
+	};
+
+	return (
+		<Router>
+			<Navbar
+				onSignUpClick={() => toggleModal('registerModal')}
+				onSignInClick={() => toggleModal('loginModal')}
+				onAccountClick={() => toggleModal('accountModal')}
+				onCreateSetClick={() => toggleModal('createSetModal')}
+			/>
+			<Routes>
+				<Route path="/" element={<Home />} />
+			</Routes>
+			<RegisterModal isOpen={modalVisibility.registerModal}
+				onClose={() => toggleModal('registerModal')} />
+			<LoginModal isOpen={modalVisibility.loginModal}
+				onClose={() => toggleModal('loginModal')} />
+			<AccountModal isOpen={modalVisibility.accountModal}
+				onClose={() => toggleModal('accountModal')} />
+		</Router>
+	);
 };
 
 export default App;
