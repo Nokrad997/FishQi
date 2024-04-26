@@ -11,6 +11,8 @@ const Home = () => {
         <button className="tab" onClick={() => openTab('mostPopularCard')}>Most Popular</button>
         <button className="tab" onClick={() => openTab('highestRatingCard')}>Highest Rating</button>
         <button className="tab" onClick={() => openTab('justAddedCard')}>Just Added</button>
+        <button className="tab" onClick={() => openTab('mySetsCard')}>My sets</button>
+        <button className="tab" onClick={() => openTab('myStarredSetsCard')}>My starred</button>
       </div>
       <div className='homeCards'>
         <div className='mostPopularCard'>
@@ -28,7 +30,16 @@ const Home = () => {
             title='Just Added'
           />
         </div>
-
+        <div className='mySetsCard' style={{ display: 'none' }}>
+          <HomeCard
+            title='My sets'
+          />
+        </div>
+        <div className='myStarredSetsCard' style={{ display: 'none' }}>
+          <HomeCard
+            title='My starred sets'
+          />
+        </div>
       </div>
     </div>
   );
