@@ -22,7 +22,7 @@ public class JwtTokenUtil {
 
     public String generateToken(String email, boolean isAdmin) {
         String claims = isAdmin ? "admin" : "user";
-        long expirationTime = 1000 * 15;
+        long expirationTime = 1000 * 60 * 5;
 
         return Jwts.builder().subject(email).claim("role", claims).issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTime)).signWith(secretKey).compact();

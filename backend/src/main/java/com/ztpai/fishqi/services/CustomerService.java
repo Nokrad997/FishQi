@@ -60,4 +60,10 @@ public class CustomerService {
     public void deleteCustomer(Long userId) {
         this.customerSharedService.deleteCustomer(userId);
     }
+
+    public boolean checkIfAdmin(String email) {
+        Customer customer = this.customerSharedService.getCustomerByEmail(email);
+        
+        return customer.getIs_admin();
+    }
 }
