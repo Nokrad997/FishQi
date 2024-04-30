@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ztpai.fishqi.DTO.CustomerDTO;
+import com.ztpai.fishqi.DTO.UpdateCustomerDTO;
 import com.ztpai.fishqi.entity.Customer;
 import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
 
@@ -32,14 +33,20 @@ public class CustomerService {
         return customerDTOs;
     }
 
-    public CustomerDTO updateCustomer(CustomerDTO requestCustomer, Long userId) {
+    public CustomerDTO updateCustomer(UpdateCustomerDTO requestCustomer, Long userId) {
         Optional<Customer> OptCus = this.customerSharedService.getCustomerById(userId);
         Customer customer = OptCus.orElseThrow();
 
-        customer.setEmail(requestCustomer.getEmail());
-        customer.setUsername(requestCustomer.getUsername());
-        customer.setIs_admin(requestCustomer.getIs_admin());
-        customer.setPassword(requestCustomer.getPassword());
+        String email = requestCustomer.getEmail() == null ? customer.getEmail() : requestCustomer.getEmail();
+        String username = requestCustomer.getUsername() == null ? customer.getUsername() : requestCustomer.getUsername();
+        String password = requestCustomer.getPassword() == null ? customer.getPassword()
+                : this.customerSharedService.encodePassword(requestCustomer.getPassword());
+        Boolean is_admin = requestCustomer.getIs_admin() == null ? customer.getIs_admin() : requestCustomer.getIs_admin();
+
+        customer.setEmail(email);
+        customer.setUsername(username);
+        customer.setIs_admin(is_admin);
+        customer.setPassword(password);
 
         this.customerSharedService.saveCustomer(customer);
 
@@ -63,7 +70,7 @@ public class CustomerService {
 
     public boolean checkIfAdmin(String email) {
         Customer customer = this.customerSharedService.getCustomerByEmail(email);
-        
+
         return customer.getIs_admin();
     }
 }

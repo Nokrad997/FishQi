@@ -2,6 +2,7 @@ package com.ztpai.fishqi.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ztpai.fishqi.DTO.CustomerDTO;
+import com.ztpai.fishqi.DTO.UpdateCustomerDTO;
 import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
 import com.ztpai.fishqi.jsonViews.Views;
 import com.ztpai.fishqi.services.CustomerService;
@@ -74,11 +75,11 @@ public class CustomerController {
 
     @PutMapping(value = "/{userId}", consumes = "application/json", produces = "application/json")
     @JsonView(Views.Public.class)
-    public ResponseEntity<?> update(@PathVariable Long userId, @Valid @RequestBody CustomerDTO customer,
+    public ResponseEntity<?> update(@PathVariable Long userId, @Valid @RequestBody UpdateCustomerDTO customer,
             Authentication auth) {
         try {
             if (!this.customerService.checkIfAdmin(auth.getName())) {
-                if (!auth.getName().equals(customer.getEmail())) {
+                if (!auth.getName().equals(this.customerService.getCustomerByID(userId).getEmail())) {
                     return ResponseEntity.badRequest().body("You can't update other users");
                 }
             }

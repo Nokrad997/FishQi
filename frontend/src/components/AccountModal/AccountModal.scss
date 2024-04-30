@@ -36,7 +36,7 @@
       z-index: 1002;
     }
   
-    .accountForm {
+    .accountForm, .hiddenPasswordField {
       display: flex;
       flex-direction: column;
       align-items: center;
