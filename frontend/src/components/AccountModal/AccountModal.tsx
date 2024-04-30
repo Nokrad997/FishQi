@@ -34,8 +34,8 @@ export const AccountModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (email != '') validateEmail(email);
-      if (password != '') {
+      if (email !== '') validateEmail(email);
+      if (password !== '') {
         validatePassword(password);
         validateMatchingPassword(password, matchingPassword);
       }

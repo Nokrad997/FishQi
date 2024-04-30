@@ -39,7 +39,7 @@ public class CustomerService {
 
         String email = requestCustomer.getEmail() == null ? customer.getEmail() : requestCustomer.getEmail();
         String username = requestCustomer.getUsername() == null ? customer.getUsername() : requestCustomer.getUsername();
-        String password = requestCustomer.getPassword() == null ? customer.getPassword()
+        String password = requestCustomer.getPassword() == "" ? customer.getPassword()
                 : this.customerSharedService.encodePassword(requestCustomer.getPassword());
         Boolean is_admin = requestCustomer.getIs_admin() == null ? customer.getIs_admin() : requestCustomer.getIs_admin();
 
