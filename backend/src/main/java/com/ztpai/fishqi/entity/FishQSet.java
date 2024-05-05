@@ -18,7 +18,11 @@ public class FishQSet {
     private String language;
 
     @Column(nullable = false)
-    private Boolean visibility;
+    private String visibility;
+
+    @OneToOne
+    @JoinColumn(name = "file_id_image", nullable = true)
+    private Files image;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)

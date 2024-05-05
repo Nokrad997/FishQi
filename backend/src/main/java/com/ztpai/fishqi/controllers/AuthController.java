@@ -53,4 +53,13 @@ public class AuthController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @PostMapping(value = "/validateToken", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> validateToken(@RequestBody RefreshDTO refresh) {
+        try {
+            return ResponseEntity.ok().body(this.authService.validateToken(refresh));
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

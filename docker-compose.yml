@@ -1,24 +1,17 @@
-version: '3.8'
+version: '3.8'  # Specifies the Docker Compose file version
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+  minio:
+    build: 
+      context: ./minIO/Dockerfile
     ports:
-      - "8080:8080"
-    networks:
-      - app-network
+      - "9000:9000"  # Exposes MinIO on port 9000
+    volumes:
+      - minio_data:/data  # Mounts the volume for MinIO data
+    environment:
+      MINIO_ROOT_USER: minioadmin  # Environment variable for MinIO root user
+      MINIO_ROOT_PASSWORD: minioadmin  # Environment variable for MinIO root password
+    restart: unless-stopped  # Ensures the service restarts unless it is stopped
 
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    ports:
-      - "3000:80"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+volumes:
+  minio_data:  # Declares a volume that can be reused

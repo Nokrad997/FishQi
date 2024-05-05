@@ -20,12 +20,16 @@ export const AccountModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const { getUserDetails, updateUserDetails } = useUserDetails();
 
   useEffect(() => {
-	getUserDetails();
-    if (isOpen) {
-      setUsername(localStorage.getItem('userUsername') ?? '');
-      setEmail(localStorage.getItem('userEmail') ?? '');
-    }
-  }, [isOpen]);
+    const fetchData = async () => {
+      if (isOpen) {
+        await getUserDetails();
+        setUsername(localStorage.getItem('userUsername') ?? '');
+        setEmail(localStorage.getItem('userEmail') ?? '');
+      }
+    };
+  
+    fetchData();
+  }, [isOpen, getUserDetails]);
 
   if (!isOpen) {
     return null;

@@ -1,0 +1,10 @@
+.fishQInput {
+  display: flex;
+  flex-direction: row;
+
+  .reject {
+    cursor: pointer;
+    z-index: 1002;
+    width: 40px;
+  }
+}

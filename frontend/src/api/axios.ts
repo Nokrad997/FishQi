@@ -32,6 +32,13 @@ const refresh = axios.create({
     },
 });
 
+const validateToken = axios.create({
+    baseURL: "http://localhost:8080/api/auth/validateToken",
+    headers: {
+        "Content-Type": "application/json",
+    }
+});
+
 api.interceptors.request.use(
     (config: any) => {
 
@@ -73,13 +80,11 @@ api.interceptors.response.use(
                         console.error("nie ma autoryzacji");
                     } else {
                         console.error("Nie udało się odświeżyć tokena z innego powodu", refreshError);
-                        localStorage.removeItem("access");
-                        localStorage.removeItem("refresh");
+                        localStorage.clear();
                     }
                 } else {
                     console.error("Unhandled error type during token refresh", refreshError);
-                    localStorage.removeItem("access");
-                    localStorage.removeItem("refresh");
+                    localStorage.clear();
                 }
             }
         }
@@ -89,4 +94,4 @@ api.interceptors.response.use(
 );
 
 
-export { api, signUp, signIn };
+export { api, signUp, signIn, validateToken };

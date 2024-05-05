@@ -33,6 +33,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             path.contains("customer/register") ||
             path.contains("h2-console") ||
             path.contains("/api/auth/refresh") ||
+            path.contains("/api/auth/validateToken") ||
             path.contains("/api/login") ||
             path.contains("swagger-ui") ||
             path.contains("/api/v3/api-docs")) {
