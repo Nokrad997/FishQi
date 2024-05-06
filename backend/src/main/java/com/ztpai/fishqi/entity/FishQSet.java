@@ -30,4 +30,8 @@ public class FishQSet {
 
     @Column
     private String description;
+
+    @OneToOne
+    @JoinColumn(name = "file_id", nullable = true)
+    private Files file;
 }

@@ -15,11 +15,9 @@ public class FishQa {
     @JoinColumn(name = "set_id", nullable = false)
     private FishQSet set;
 
-    @OneToOne
-    @JoinColumn(name = "file_id_front", nullable = false)
-    private Files fileFront;
+    @Column
+    private String front;
 
-    @OneToOne
-    @JoinColumn(name = "file_id_back", nullable = false)
-    private Files fileBack;
+    @Column
+    private String back;
 }
