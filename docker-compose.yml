@@ -1,17 +1,17 @@
-version: '3.8'  # Specifies the Docker Compose file version
+version: '3.7'
 
 services:
-  minio:
-    build: 
-      context: ./minIO/Dockerfile
-    ports:
-      - "9000:9000"  # Exposes MinIO on port 9000
-    volumes:
-      - minio_data:/data  # Mounts the volume for MinIO data
+  ftp-server:
+    image: fauria/vsftpd
     environment:
-      MINIO_ROOT_USER: minioadmin  # Environment variable for MinIO root user
-      MINIO_ROOT_PASSWORD: minioadmin  # Environment variable for MinIO root password
-    restart: unless-stopped  # Ensures the service restarts unless it is stopped
-
-volumes:
-  minio_data:  # Declares a volume that can be reused
+      FTP_USER: root
+      FTP_PASS: root
+      PASV_ADDRESS: localhost
+      PASV_MIN_PORT: 21100
+      PASV_MAX_PORT: 21110
+    ports:
+      - "20-21:20-21"
+      - "21100-21110:21100-21110"
+    volumes:
+      - ./ftpdata:/home/vsftpd
+    restart: always
