@@ -16,8 +16,9 @@ public class FishQa {
     private FishQSet set;
 
     @Column
-    private String front;
-
-    @Column
-    private String back;
+    private Integer fishq_number;
+    
+    @OneToOne
+    @JoinColumn(name = "file_id", nullable = true)
+    private Files file;
 }

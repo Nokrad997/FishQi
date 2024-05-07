@@ -1,25 +1,19 @@
 import { api } from './axios';
 
-export async function sendFishQSet(set: SetData) {
+type setPromise = {
+  set_id: number;
+  title: string;
+  language: string;
+  visibility: string;
+  owner_id: number;
+  description: string;
+};
+
+export async function sendFishQSet(set: SetData): Promise<setPromise> {
   try {
-    const formData = new FormData();
+    const response = await api.post('fishqset/', set);
 
-    formData.append('title', set.title);
-    formData.append('language', set.language);
-    formData.append('visibility', set.visibility);
-    formData.append('description', set.description);
-
-    if (set.photo) {
-      console.log(set.photo)
-      formData.append('photo', set.photo, set.photo.name);
-    }
-    const response = await api.post('fishqset/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    return response;
+    return response.data;
   } catch (error: any) {
     console.log('Failed in sending fishq set: ', error);
 

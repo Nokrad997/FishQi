@@ -6,76 +6,94 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.ztpai.fishqi.DTO.FishQSetDTO;
+import com.ztpai.fishqi.config.JwtTokenUtil;
+import com.ztpai.fishqi.entity.Customer;
+import com.ztpai.fishqi.entity.Files;
 import com.ztpai.fishqi.entity.FishQSet;
+import com.ztpai.fishqi.repositories.CustomerRepository;
+import com.ztpai.fishqi.repositories.FilesRepository;
 import com.ztpai.fishqi.repositories.FishQSetRepository;
 
 @Service
 public class FishQSetService {
     private FishQSetRepository fishQSetRepository;
-    // private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private CustomerRepository customerRepository;
+    private FilesRepository filesRepository;
+    private JwtTokenUtil jwtTokenUtil;
 
-    public FishQSetService(FishQSetRepository fishQSetRepository) {
-        this.fishQSetRepository =  fishQSetRepository;
+    public FishQSetService(FishQSetRepository fishQSetRepository, JwtTokenUtil jwtTokenUtil,
+            CustomerRepository customerRepository, FilesRepository filesRepository) {
+        this.fishQSetRepository = fishQSetRepository;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.customerRepository = customerRepository;
+        this.filesRepository = filesRepository;
     }
 
-    public FishQSetDTO getFishQSetByID(Long fishQId){
+    public FishQSetDTO getFishQSetByID(Long fishQId) {
         Optional<FishQSet> optFi = this.fishQSetRepository.findById(fishQId);
         FishQSet fishQ = optFi.get();
 
-        if(fishQ == null) {
+        if (fishQ == null) {
             throw new IllegalArgumentException("No user with id " + fishQId);
         }
 
-        return convertToDTO(fishQ);
+        return fishQ.convertToDTO();
     }
 
-    public List<FishQSetDTO> getAllFishQSet(){
+    public List<FishQSetDTO> getAllFishQSet() {
         List<FishQSet> fishQ = this.fishQSetRepository.findAll();
-        List<FishQSetDTO> fishQDTOs = fishQ.stream().map(this::convertToDTO).toList();
+        List<FishQSetDTO> fishQDTOs = fishQ.stream().map(FishQSet::convertToDTO).toList();
 
         return fishQDTOs;
     }
 
-    public String updateFishQSet(FishQSet requestFishQ, Long fishQId) {
-        Optional<FishQSet> OptFi = this.fishQSetRepository.findById(fishQId);   
-        FishQSet fishQ = OptFi.get(); 
+    public FishQSetDTO updateFishQSet(FishQSetDTO requestFishQ, Long fishQId) {
+        Optional<FishQSet> OptFi = this.fishQSetRepository.findById(fishQId);
+        FishQSet fishQ = OptFi.get();
 
-        if(fishQ == null) {
-            throw new IllegalArgumentException("No user with id " + fishQId);
+        if (fishQ == null) {
+            throw new IllegalArgumentException("No set with id " + fishQId);
         }
 
-        fishQ.setTitle(requestFishQ.getTitle());
-        fishQ.setLanguage(requestFishQ.getLanguage());
-        fishQ.setVisibility(requestFishQ.getVisibility());
-        fishQ.setOwner(requestFishQ.getOwner());
-        fishQ.setDescription(requestFishQ.getDescription());
-        
+        String title = requestFishQ.getTitle() != null ? requestFishQ.getTitle() : fishQ.getTitle();
+        String language = requestFishQ.getLanguage() != null ? requestFishQ.getLanguage() : fishQ.getLanguage();
+        String visibility = requestFishQ.getVisibility() != null ? requestFishQ.getVisibility() : fishQ.getVisibility();
+        Customer owner = requestFishQ.getOwner_id() != null
+                ? this.customerRepository.findById(requestFishQ.getOwner_id()).orElseThrow()
+                : fishQ.getOwner();
+        String description = requestFishQ.getDescription() != null ? requestFishQ.getDescription()
+                : fishQ.getDescription();
+                
+        Files file = fishQ.getImage();
+        if (requestFishQ.getFtp_image_path() != null) {
+            file = new Files(requestFishQ.getFtp_image_path());
+            this.filesRepository.save(file); 
+        }
+
+        fishQ.setTitle(title);
+        fishQ.setLanguage(language);
+        fishQ.setVisibility(visibility);
+        fishQ.setOwner(owner);
+        fishQ.setDescription(description);
+        fishQ.setImage(file);
 
         this.fishQSetRepository.save(fishQ);
 
-        return "działa";
+        return fishQ.convertToDTO();
     }
 
-    public String saveFishQSet(FishQSet requestFishQSet) {
-        // customer.setPassword(bCryptPasswordEncoder.encode(customer.getPassword()));
-        this.fishQSetRepository.save(requestFishQSet);
+    public FishQSetDTO saveFishQSet(FishQSetDTO requestFishQSet, String name) {
+        FishQSet fishQSet = requestFishQSet.convertToEntity();
+        Customer cust = this.customerRepository.findByEmail(name);
 
-        return "działa";
+        fishQSet.setOwner(cust);
+
+        this.fishQSetRepository.save(fishQSet);
+
+        return fishQSet.convertToDTO();
     }
 
-    public void deleteFishQSet(Long fishqSetId){
+    public void deleteFishQSet(Long fishqSetId) {
         this.fishQSetRepository.deleteById(fishqSetId);
-    }
-
-    private FishQSetDTO convertToDTO(FishQSet ffishQSet) {
-        FishQSetDTO dto = new FishQSetDTO();
-        dto.setSet_id(ffishQSet.getSet_id());
-        dto.setTitle(ffishQSet.getTitle());
-        dto.setLanguage(ffishQSet.getLanguage());
-        dto.setVisibility(ffishQSet.getVisibility());
-        dto.setOwner(ffishQSet.getOwner());
-        dto.setDescription(ffishQSet.getDescription());
-
-        return dto;
     }
 }

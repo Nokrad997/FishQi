@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './CreateSetModal.scss';
 import { FishQInput } from '../FishQInput/FishQInput';
 import useFishQSet from '../../hooks/useFisQSet';
+import useFiles from '../../hooks/useFiles';
 
 interface Props {
   isOpen: boolean;
@@ -13,6 +14,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [inputs, setInputs] = useState<FishQData[]>([]);
   const [nextKey, setNextKey] = useState(0);
   const { sendSet } = useFishQSet();
+  const { sendFiles } = useFiles();
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -23,32 +25,32 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const handleFileSelect = (event: any) => {
+  const handleFileSelect = (event: any): void => {
     if (event.target.files.length > 0) {
       const selectedFile = event.target.files[0];
       setFile(selectedFile);
     }
   };
 
-  const triggerFileInput = () => {
+  const triggerFileInput = (): void => {
     document.getElementById('fileInput').click();
   };
 
-  const addFishQHandler = () => {
+  const addFishQHandler = (): void => {
     setInputs((inputs) => [...inputs, { key: nextKey, word: '', translation: '' }]);
     setNextKey(nextKey + 1);
   };
 
-  const deleteInputFieldHandler = (key: number) => {
+  const deleteInputFieldHandler = (key: number): void => {
     setInputs((inputs) => inputs.filter((input) => input.key !== key));
   };
 
-  const handleWordChange = (key: number, value: string) => {
+  const handleWordChange = (key: number, value: string): void => {
     const updatedInputs = inputs.map((input) => (input.key === key ? { ...input, word: value } : input));
     setInputs(updatedInputs);
   };
 
-  const handleTranslationChange = (key: number, value: string) => {
+  const handleTranslationChange = (key: number, value: string): void => {
     const updatedInputs = inputs.map((input) => (input.key === key ? { ...input, translation: value } : input));
     setInputs(updatedInputs);
   };
@@ -57,15 +59,30 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
     e.preventDefault();
     try {
       const setData = {
-        photo: file,
         title: (document.getElementById('title') as HTMLInputElement).value,
         language: (document.getElementById('language') as HTMLInputElement).value,
         visibility: (document.getElementById('visibility') as HTMLSelectElement).value,
         description: (document.getElementById('description') as HTMLInputElement).value,
-        fishqs: inputs,
       }
       const response = await sendSet(setData);
       console.log(response);
+
+      let i = 0;
+      const fishqs = inputs.map(({ word, translation }) => ({
+        key: i++,
+        word: word,
+        translation: translation
+      }));
+
+      const data = {
+        set_id: response.set_id,
+        photo: file,
+        fishqs,
+      };
+
+      console.log(data);
+      await sendFiles(data);
+
     } catch (error: any) {
       setError(error.message);
     }
@@ -101,8 +118,8 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
             </div>
 
             <div className="setDetails">
-              <input type="text" id="title" placeholder="Type in set title" required/>
-              <input type="text" id="language" placeholder="Type in set language" required/>
+              <input type="text" id="title" placeholder="Type in set title" required />
+              <input type="text" id="language" placeholder="Type in set language" required />
               <select id="visibility" name="visibility" defaultValue="Choose visibility option">
                 <option value="public">Public</option>
                 <option value="private">Private</option>

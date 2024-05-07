@@ -1,5 +1,7 @@
 package com.ztpai.fishqi.entity;
 
+import com.ztpai.fishqi.DTO.FishQSetDTO;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,13 +27,25 @@ public class FishQSet {
     private Files image;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = true)
     private Customer owner;
 
     @Column
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "file_id", nullable = true)
-    private Files file;
+    public FishQSet(){}
+
+    public FishQSetDTO convertToDTO(){
+        FishQSetDTO fishQSetDTO = new FishQSetDTO();
+        fishQSetDTO.setSet_id(this.set_id);
+        fishQSetDTO.setTitle(this.title);
+        fishQSetDTO.setLanguage(this.language);
+        fishQSetDTO.setVisibility(this.visibility);
+        fishQSetDTO.setOwner_id(this.owner.getUser_id());
+        fishQSetDTO.setDescription(this.description);
+
+        if(this.image != null)
+            fishQSetDTO.setFtp_image_path(this.image.getFtp_path());
+        return fishQSetDTO;
+    }
 }
