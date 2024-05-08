@@ -1,5 +1,5 @@
 interface FilesData {
-    set_id: number;
+    setId: number;
     photo?: File | null;
     fishqs: FishQData[];
 };

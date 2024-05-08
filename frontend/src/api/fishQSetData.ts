@@ -1,7 +1,7 @@
 import { api } from './axios';
 
 type setPromise = {
-  set_id: number;
+  setId: number;
   title: string;
   language: string;
   visibility: string;
@@ -23,7 +23,7 @@ export async function sendFishQSet(set: SetData): Promise<setPromise> {
 
 export async function updateFishQSet(set: SetData): Promise<setPromise> {
   try {
-    const response = await api.put(`fishqset/${set.set_id}`, set);
+    const response = await api.put(`fishqset/${set.setId}`, set);
 
     return response.data;
   } catch (error: any) {

@@ -3,7 +3,7 @@ import { api } from "./axios";
 export async function send(data: FilesData) {
     try {
         const formData = new FormData();
-        formData.append('set_id', data.set_id.toString());
+        formData.append('setId', data.setId.toString());
         if (data.photo) formData.append('photo', data.photo, data.photo.name);
         formData.append('fishqs', JSON.stringify(data.fishqs));
 

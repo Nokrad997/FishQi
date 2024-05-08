@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class FishQSetDTO {
-    private Long set_id;
+    private Long setId;
 
     // @NotBlank(message = "Title is mandatory")
     private String title;
@@ -22,13 +22,13 @@ public class FishQSetDTO {
     // @NotBlank(message = "Description is mandatory")
     private String description;
 
-    private String ftp_image_path;
+    private String ftpImagePath;
 
     public FishQSetDTO() {}
 
     public FishQSet convertToEntity() {
         FishQSet fishQSet = new FishQSet();
-        fishQSet.setSet_id(this.set_id);
+        fishQSet.setSetId(this.setId);
         fishQSet.setTitle(this.title);
         fishQSet.setLanguage(this.language);
         fishQSet.setVisibility(this.visibility);

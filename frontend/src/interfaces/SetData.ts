@@ -1,8 +1,8 @@
 interface SetData {
-    set_id?: number;
+    setId?: number;
     title?: string;
     description?: string;
     language?: string;
     visibility?: string | "public";
-    ftp_image_path?: string;
+    ftpImagePath?: string;
 }

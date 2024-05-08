@@ -13,19 +13,19 @@ import lombok.Data;
 
 @Data
 public class FilesDTO {
-    private Long file_id;
-    private Long set_id;
+    private Long fileId;
+    private Long setId;
     private String fishqs;
 
     @JsonIgnore
     private MultipartFile photo;
-    private String ftp_photo_path;
-    private String ftp_path;
+    private String ftpPhotoPath;
+    private String ftpPath;
 
     public Files convertToEntity() {
         Files files = new Files();
-        files.setFile_id(this.file_id);
-        files.setFtp_path(ftp_path);
+        files.setFileId(this.fileId);
+        files.setFtpPath(this.ftpPath);
         return files;
     }
 

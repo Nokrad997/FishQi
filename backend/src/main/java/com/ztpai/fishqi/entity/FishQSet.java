@@ -11,7 +11,7 @@ public class FishQSet {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long set_id;
+    private Long setId;
 
     @Column(nullable = false)
     private String title;
@@ -37,7 +37,7 @@ public class FishQSet {
 
     public FishQSetDTO convertToDTO(){
         FishQSetDTO fishQSetDTO = new FishQSetDTO();
-        fishQSetDTO.setSet_id(this.set_id);
+        fishQSetDTO.setSetId(this.setId);
         fishQSetDTO.setTitle(this.title);
         fishQSetDTO.setLanguage(this.language);
         fishQSetDTO.setVisibility(this.visibility);
@@ -45,7 +45,7 @@ public class FishQSet {
         fishQSetDTO.setDescription(this.description);
 
         if(this.image != null)
-            fishQSetDTO.setFtp_image_path(this.image.getFtp_path());
+            fishQSetDTO.setFtpImagePath(this.image.getFtpPath());
         return fishQSetDTO;
     }
 }

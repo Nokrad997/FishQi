@@ -77,7 +77,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
       }));
 
       const data = {
-        set_id: setResponse.set_id,
+        setId: setResponse.setId,
         photo: file,
         fishqs,
       };
@@ -86,13 +86,13 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
       const filesResponse = await sendFiles(data);
 
       const updateSetData = {
-        set_id: setResponse.set_id,
-        ftp_image_path: filesResponse[0].ftp_path,
+        setId: setResponse.setId,
+        ftpImagePath: filesResponse[0].ftpPath,
       };
 
       const fishQWordsData = {
-        set_id: setResponse.set_id,
-        ftp_words_path: filesResponse[1].ftp_path,
+        setId: setResponse.setId,
+        ftpWordsPath: filesResponse[1].ftpPath,
       };
       
       await updateSet(updateSetData);

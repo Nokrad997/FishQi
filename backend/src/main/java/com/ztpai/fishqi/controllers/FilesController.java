@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/files")
@@ -55,6 +54,7 @@ public class FilesController {
     @PostMapping(value = "/", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<?> store(@ModelAttribute FilesDTO files, Authentication auth) {
         try {
+            // 
             return ResponseEntity.ok(this.filesService.saveFile(files, auth.getName()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

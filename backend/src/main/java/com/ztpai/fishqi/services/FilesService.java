@@ -59,7 +59,7 @@ public class FilesService {
             throw new IllegalArgumentException("No file with id " + fileId);
         }
 
-        file.setFtp_path(requestFile.getFtp_path());
+        file.setFtpPath(requestFile.getFtpPath());
 
         this.filesRepository.save(file);
 
@@ -70,7 +70,7 @@ public class FilesService {
         MultipartFile photo = requestFile.getPhoto();
         List<FishQData> fishQDataList = requestFile.getFishQDataList(this.objectMapper);
         Long ownerId = this.customerRepository.findByEmail(ownerEmail).getUser_id();
-        String ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSet_id()) + "/" + "photo.png";
+        String ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSetId()) + "/" + "photo.png";
         
         Files file = new Files(ftpPath);
         this.filesRepository.save(file);
@@ -78,7 +78,7 @@ public class FilesService {
         this.ftpUploader.uploadFile(photo.getInputStream(), ftpPath);
 
         JSONObject jsonObject = new JSONObject();
-        ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSet_id()) + "/" + "words.json";
+        ftpPath = "FISHQI/" + ownerId + "/" + requestFile.getSetId() + "/" + "words.json";
         
         for (FishQData fishQData : fishQDataList) {
             jsonObject.put(fishQData.getWord(), fishQData.getTranslation());

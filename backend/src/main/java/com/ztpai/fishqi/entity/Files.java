@@ -8,24 +8,25 @@ import lombok.Data;
 @Data
 @Entity
 public class Files {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long file_id;
+    private Long fileId;
 
-    @Column(nullable = false)
-    private String ftp_path;
+    @Column(name = "ftp_path", nullable = false)  // This maps to the actual database column name
+    private String ftpPath;  // Use camelCase here
 
     public Files() {}
 
-    public Files(String ftp_path) {
-        this.ftp_path = ftp_path;
+    public Files(String ftpPath) {
+        this.ftpPath = ftpPath;
     }
 
     public FilesDTO convertToDTO() {
         FilesDTO filesDTO = new FilesDTO();
-        filesDTO.setFile_id(this.file_id);
-        filesDTO.setFtp_path(this.ftp_path);
+        filesDTO.setFileId(this.fileId);
+        filesDTO.setFtpPath(this.ftpPath);
         return filesDTO;
     }
 }
+

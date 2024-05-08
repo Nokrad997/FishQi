@@ -61,8 +61,6 @@ public class FishQSetController {
             
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
-        // this.fishQSetService.updateFishQSet(fishQSet, fishQSetId);
-        // return "File updated";
     }
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
