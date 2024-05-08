@@ -1,22 +1,13 @@
 import { api } from './axios';
 
-type setPromise = {
-  set_id: number;
-  title: string;
-  language: string;
-  visibility: string;
-  owner_id: number;
-  description: string;
-};
+export async function send(data: FishQDbData) {
+    try {
+        const response = await api.post('fishq/', data);
 
-export async function sendFishQSet(set: SetData): Promise<setPromise> {
-  try {
-    const response = await api.post('fishqset/', set);
+        return response.data;
+    } catch (error: any) {
+        console.log('Failed in sending fishQ: ', error);
 
-    return response.data;
-  } catch (error: any) {
-    console.log('Failed in sending fishq set: ', error);
-
-    throw new Error(error.message || 'Failed in sending fishq set');
-  }
+        throw new Error(error.message || 'Failed in sending fishQ');
+    }
 }

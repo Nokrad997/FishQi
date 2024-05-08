@@ -14,9 +14,6 @@ public class FishQa {
     @OneToOne
     @JoinColumn(name = "set_id", nullable = false)
     private FishQSet set;
-
-    @Column
-    private Integer fishq_number;
     
     @OneToOne
     @JoinColumn(name = "file_id", nullable = true)

@@ -3,6 +3,7 @@ import './CreateSetModal.scss';
 import { FishQInput } from '../FishQInput/FishQInput';
 import useFishQSet from '../../hooks/useFisQSet';
 import useFiles from '../../hooks/useFiles';
+import useFishQ from '../../hooks/useFishQ';
 
 interface Props {
   isOpen: boolean;
@@ -13,8 +14,9 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [file, setFile] = useState<File | null>(null);
   const [inputs, setInputs] = useState<FishQData[]>([]);
   const [nextKey, setNextKey] = useState(0);
-  const { sendSet } = useFishQSet();
+  const { sendSet, updateSet } = useFishQSet();
   const { sendFiles } = useFiles();
+  const { sendFishQ } = useFishQ();
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -64,8 +66,8 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
         visibility: (document.getElementById('visibility') as HTMLSelectElement).value,
         description: (document.getElementById('description') as HTMLInputElement).value,
       }
-      const response = await sendSet(setData);
-      console.log(response);
+      const setResponse = await sendSet(setData);
+      console.log(setResponse);
 
       let i = 0;
       const fishqs = inputs.map(({ word, translation }) => ({
@@ -75,13 +77,26 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
       }));
 
       const data = {
-        set_id: response.set_id,
+        set_id: setResponse.set_id,
         photo: file,
         fishqs,
       };
 
       console.log(data);
-      await sendFiles(data);
+      const filesResponse = await sendFiles(data);
+
+      const updateSetData = {
+        set_id: setResponse.set_id,
+        ftp_image_path: filesResponse[0].ftp_path,
+      };
+
+      const fishQWordsData = {
+        set_id: setResponse.set_id,
+        ftp_words_path: filesResponse[1].ftp_path,
+      };
+      
+      await updateSet(updateSetData);
+      await sendFishQ(fishQWordsData);
 
     } catch (error: any) {
       setError(error.message);

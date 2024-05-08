@@ -1,9 +1,13 @@
 package com.ztpai.fishqi.services;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,14 +66,32 @@ public class FilesService {
         return "działa";
     }
 
-    public String saveFile(FilesDTO requestFile, String ownerEmail) throws IOException {
+    public List<Files> saveFile(FilesDTO requestFile, String ownerEmail) throws IOException {
         MultipartFile photo = requestFile.getPhoto();
         List<FishQData> fishQDataList = requestFile.getFishQDataList(this.objectMapper);
         Long ownerId = this.customerRepository.findByEmail(ownerEmail).getUser_id();
         String ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSet_id()) + "/" + "photo.png";
+        
+        Files file = new Files(ftpPath);
+        this.filesRepository.save(file);
 
         this.ftpUploader.uploadFile(photo.getInputStream(), ftpPath);
-        return "działa";
+
+        JSONObject jsonObject = new JSONObject();
+        ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSet_id()) + "/" + "words.json";
+        
+        for (FishQData fishQData : fishQDataList) {
+            jsonObject.put(fishQData.getWord(), fishQData.getTranslation());
+        }
+
+        InputStream inputStream = new ByteArrayInputStream(jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8));
+        this.ftpUploader.uploadFile(inputStream, ftpPath);
+        
+        Files file2 = new Files(ftpPath);
+        this.filesRepository.save(file2);
+
+
+        return List.of(file, file2);
     }
 
     public void deleteFile(Long fileId) {
