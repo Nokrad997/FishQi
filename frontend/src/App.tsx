@@ -13,19 +13,22 @@ import { CreateSetModal } from './components/CreateSetModal/CreateSetModal';
 
 const App: React.FC = () => {
   useEffect(() => {
-    checkSessionOnStartup();
-  }, []);
-
-  const checkSessionOnStartup = () => {
-    if (localStorage.getItem('access') != null) {
-      try {
-        validateToken.post('', { refreshToken: localStorage.getItem('refresh') });
-      } catch (error: any) {
-        localStorage.clear
-        // console.log(error);
+    const checkSession = async () => {
+      if (localStorage.getItem('access') != null) {
+        console.log('duuuuuuuuuuopaaaaa');
+        try {
+          const response = await validateToken.post('', { refreshToken: localStorage.getItem('refresh') });
+          console.log(response);
+        } catch (error: any) {
+          console.log(error);
+          localStorage.clear();
+          location.reload();
+        }
       }
-    }
-  };
+    };
+
+    checkSession();
+  }, []);
 
   const [modalVisibility, setModalVisibility] = useState<{
     registerModal: boolean;

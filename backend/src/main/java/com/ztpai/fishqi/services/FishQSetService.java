@@ -66,8 +66,7 @@ public class FishQSetService {
                 
         Files file = fishQ.getImage();
         if (requestFishQ.getFtpImagePath() != null) {
-            file = new Files(requestFishQ.getFtpImagePath());
-            this.filesRepository.save(file); 
+            file = this.filesRepository.findByFtpPath(requestFishQ.getFtpImagePath());
         }
 
         fishQ.setTitle(title);
