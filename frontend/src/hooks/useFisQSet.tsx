@@ -1,4 +1,4 @@
-import { sendFishQSet, updateFishQSet } from "../api/fishQSetData";
+import { getFishqSets, sendFishQSet, updateFishQSet } from "../api/fishQSetData";
 
 const useFishQSet = () => {
 	const sendSet = async (set: SetData) => {
@@ -28,7 +28,19 @@ const useFishQSet = () => {
 		}
 	};
 
-	return { sendSet, updateSet };
+	const getSets = async () => {
+		try {
+			const response = await getFishqSets();
+
+			return response;
+		} catch (error: any) { 
+			console.log('Failed in getting fishq sets: ', error);
+
+			throw new Error(error.message || 'Failed in getting fishq sets');
+		}
+	};
+
+	return { sendSet, updateSet, getSets };
 };
 
 export default useFishQSet;

@@ -11,10 +11,18 @@ import com.ztpai.fishqi.entity.Files;
 import com.ztpai.fishqi.entity.FishQSet;
 import com.ztpai.fishqi.services.FilesService;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/files")
@@ -54,7 +63,7 @@ public class FilesController {
     @PostMapping(value = "/", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<?> store(@ModelAttribute FilesDTO files, Authentication auth) {
         try {
-            // 
+            //
             return ResponseEntity.ok(this.filesService.saveFile(files, auth.getName()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -65,5 +74,22 @@ public class FilesController {
     public String delete(@PathVariable Long fileId) {
         this.filesService.deleteFile(fileId);
         return "file deleted";
+    }
+
+    @GetMapping(value = "/getphoto", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> getPhoto(@RequestParam String filePath) {
+        try {
+            String downloadedFilePath = this.filesService.getFile(filePath);
+            File file = new File(downloadedFilePath);
+            InputStream in = new FileInputStream(file);
+
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"")
+                    .contentLength(file.length())
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(StreamUtils.copyToByteArray(in));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage().getBytes());
+        }
     }
 }

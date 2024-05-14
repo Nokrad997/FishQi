@@ -98,7 +98,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
       await updateSet(updateSetData);
       await sendFishQ(fishQWordsData);
 
-      // onClose();
+      onClose();
 
     } catch (error: any) {
       setError(error.message);

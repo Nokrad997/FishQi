@@ -1,4 +1,4 @@
-import { send } from "../api/filesData";
+import { getPhoto, send } from "../api/filesData";
 
 const useFiles = () => {
     const sendFiles = async (data: FilesData) => {
@@ -14,7 +14,19 @@ const useFiles = () => {
         }
     };
 
-    return { sendFiles };
+    const getPhotoFromFtp = async (ftpPath: string) => {
+        try {
+            const response = await getPhoto(ftpPath);
+
+            return URL.createObjectURL(response.data);
+        } catch (error: any) {
+            console.log('Failed in getting photo: ', error);
+
+            throw new Error(error.message || 'Failed in getting photo');
+        }
+    }
+
+    return { sendFiles, getPhotoFromFtp };
 };
 
 export default useFiles;

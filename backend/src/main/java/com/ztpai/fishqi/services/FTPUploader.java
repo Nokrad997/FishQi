@@ -1,7 +1,9 @@
 package com.ztpai.fishqi.services;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketException;
 
 import org.apache.commons.net.ftp.FTPClient;
@@ -56,6 +58,44 @@ public class FTPUploader {
                 throw new IOException("File upload failed: " + ftpClient.getReplyString());
             } else {
                 System.out.println("File has been uploaded successfully to: " + remoteFilePath);
+            }
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void downloadFile(String remoteFilePath, String localFilePath) throws IOException {
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(server, port);
+            int reply = ftpClient.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftpClient.disconnect();
+                throw new IOException("FTP server refused connection, response code: " + reply);
+            }
+
+            if (!ftpClient.login(user, pass)) {
+                ftpClient.logout();
+                throw new IOException("FTP login failed with user: " + user);
+            }
+
+            ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+            ftpClient.enterLocalPassiveMode();
+
+            String file = remoteFilePath.split("/")[remoteFilePath.split("/").length - 1];
+            try (OutputStream outputStream = new FileOutputStream(localFilePath + file)) {
+                if (!ftpClient.retrieveFile(remoteFilePath, outputStream)) {
+                    throw new IOException("File download failed: " + ftpClient.getReplyString());
+                } else {
+                    System.out.println("File has been downloaded successfully to: " + localFilePath);
+                }
             }
         } finally {
             if (ftpClient.isConnected()) {

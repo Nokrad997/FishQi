@@ -70,26 +70,29 @@ public class FilesService {
         MultipartFile photo = requestFile.getPhoto();
         List<FishQData> fishQDataList = requestFile.getFishQDataList(this.objectMapper);
         Long ownerId = this.customerRepository.findByEmail(ownerEmail).getUser_id();
-        String ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSetId()) + "/" + "photo.png";
-        
-        Files file = new Files(ftpPath);
-        this.filesRepository.save(file);
+        String ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSetId()) + "/"
+        + "photo.png";
+        Files file = new Files();
 
-        this.ftpUploader.uploadFile(photo.getInputStream(), ftpPath);
+        if (photo != null) {
+            file.setFtpPath(ftpPath);
+            this.filesRepository.save(file);
+
+            this.ftpUploader.uploadFile(photo.getInputStream(), ftpPath);
+        }
 
         JSONObject jsonObject = new JSONObject();
         ftpPath = "FISHQI/" + ownerId + "/" + requestFile.getSetId() + "/" + "words.json";
-        
+
         for (FishQData fishQData : fishQDataList) {
             jsonObject.put(fishQData.getWord(), fishQData.getTranslation());
         }
 
         InputStream inputStream = new ByteArrayInputStream(jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8));
         this.ftpUploader.uploadFile(inputStream, ftpPath);
-        
+
         Files file2 = new Files(ftpPath);
         this.filesRepository.save(file2);
-
 
         return List.of(file, file2);
     }
@@ -98,6 +101,12 @@ public class FilesService {
         this.filesRepository.deleteById(fileId);
     }
 
+    public String getFile(String filePath) throws IOException {
+        String localPath = "src/main/resources/static/temp/";
+        this.ftpUploader.downloadFile(filePath, localPath);
+        String fileName = filePath.split("/")[filePath.split("/").length - 1];
+        return localPath + fileName;
+    }
 }
 
-// 
+//

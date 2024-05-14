@@ -30,13 +30,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         if (path.contains("/api/auth/login") ||
-            path.contains("customer/register") ||
-            path.contains("h2-console") ||
-            path.contains("/api/auth/refresh") ||
-            path.contains("/api/auth/validateToken") ||
-            path.contains("/api/login") ||
-            path.contains("swagger-ui") ||
-            path.contains("/api/v3/api-docs")) {
+                path.contains("customer/register") ||
+                path.contains("h2-console") ||
+                path.contains("/api/auth/refresh") ||
+                path.contains("/api/auth/validateToken") ||
+                path.contains("/api/login") ||
+                path.contains("swagger-ui") ||
+                path.contains("/api/v3/api-docs")) {
+
+            chain.doFilter(request, response);
+            return;
+        } else if (request.getMethod().equals("GET")
+                && (path.contains("/api/fishqset") || path.contains("/api/files/getphoto"))) {
+
             chain.doFilter(request, response);
             return;
         }

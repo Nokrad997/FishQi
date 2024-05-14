@@ -19,4 +19,18 @@ export async function send(data: FilesData) {
 
         throw new Error(error.message || 'Failed in sending files');
     }
+};
+
+export async function getPhoto(ftpPath: string) {
+    try {
+        const response = await api.get(`files/getphoto?filePath=${ftpPath}`, {
+            responseType: 'blob',
+        });
+        
+        return response;
+    } catch (error: any) {
+        console.log('Failed in getting photo: ', error);
+
+        throw new Error(error.message || 'Failed in getting photo');
+    }
 }

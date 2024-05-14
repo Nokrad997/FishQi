@@ -15,7 +15,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const checkSession = async () => {
       if (localStorage.getItem('access') != null) {
-        console.log('duuuuuuuuuuopaaaaa');
         try {
           const response = await validateToken.post('', { refreshToken: localStorage.getItem('refresh') });
           console.log(response);
