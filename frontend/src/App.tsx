@@ -29,6 +29,17 @@ const App: React.FC = () => {
     checkSession();
   }, []);
 
+  interface editData{
+    title: string;
+    description: string;
+    language: string;
+    visibility: string;
+    img: string;
+    words: FishQData[];
+  
+  }
+
+  const [editData, setEditData] = useState<editData | null>(null);
   const [modalVisibility, setModalVisibility] = useState<{
     registerModal: boolean;
     loginModal: boolean;
@@ -41,7 +52,13 @@ const App: React.FC = () => {
     createSetModal: false,
   });
 
-  const toggleModal = (modalName: keyof typeof modalVisibility): void => {
+  const toggleModal = (modalName: keyof typeof modalVisibility, data?: any): void => {
+    if (modalName === 'createSetModal' && data) {
+      console.log(data);
+      setEditData(data);
+    } else {
+      setEditData(null);
+    }
     setModalVisibility((prevState) => ({
       ...prevState,
       [modalName]: !prevState[modalName],
@@ -57,12 +74,12 @@ const App: React.FC = () => {
         onCreateSetClick={() => toggleModal('createSetModal')}
       />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home onEditClick={(data) => toggleModal('createSetModal', data)} />} />
       </Routes>
       <RegisterModal isOpen={modalVisibility.registerModal} onClose={() => toggleModal('registerModal')} />
       <LoginModal isOpen={modalVisibility.loginModal} onClose={() => toggleModal('loginModal')} />
       <AccountModal isOpen={modalVisibility.accountModal} onClose={() => toggleModal('accountModal')} />
-      <CreateSetModal isOpen={modalVisibility.createSetModal} onClose={() => toggleModal('createSetModal')} />
+      <CreateSetModal isOpen={modalVisibility.createSetModal} onClose={() => toggleModal('createSetModal')} initialData={editData}/>
     </Router>
   );
 };

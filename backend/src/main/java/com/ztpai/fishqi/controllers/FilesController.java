@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -90,6 +91,22 @@ public class FilesController {
                     .body(StreamUtils.copyToByteArray(in));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage().getBytes());
+        }
+    }
+
+    @GetMapping(value = "/getwords", produces = "application/json")
+    public ResponseEntity<?> getWords(@RequestParam String filePath) {
+        try {
+            String downloadedFilePath = this.filesService.getFile(filePath);
+            File file = new File(downloadedFilePath);
+            String jsonData = new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Object jsonObject = objectMapper.readValue(jsonData, Object.class);
+
+            return ResponseEntity.ok(jsonObject);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

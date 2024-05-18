@@ -1,5 +1,7 @@
 package com.ztpai.fishqi.entity;
 
+import com.ztpai.fishqi.DTO.RatingDTO;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,4 +25,14 @@ public class Rating {
     private Integer score;
 
     public Rating() {}
+
+    public RatingDTO convertToDTO() {
+        RatingDTO ratingDTO = new RatingDTO();
+        ratingDTO.setRatingId(this.ratingId);
+        ratingDTO.setFishQSet(this.fishQSet);
+        ratingDTO.setCustomer(this.customer);
+        ratingDTO.setScore(this.score);
+
+        return ratingDTO;
+    }
 }

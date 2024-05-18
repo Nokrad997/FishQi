@@ -17,19 +17,18 @@ export const AccountModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [matchingPassword, setMatchingPassword] = useState('');
   const [error, setError] = useState<string>('');
   const { validateEmail, validatePassword, validateMatchingPassword } = useUserDetailsValidator();
-  const { getUserDetails, updateUserDetails } = useUserDetails();
+  const { updateUserDetails } = useUserDetails();
 
   useEffect(() => {
     const fetchData = async () => {
       if (isOpen) {
-        await getUserDetails();
         setUsername(localStorage.getItem('userUsername') ?? '');
         setEmail(localStorage.getItem('userEmail') ?? '');
       }
     };
   
     fetchData();
-  }, [isOpen, getUserDetails]);
+  }, [isOpen]);
 
   if (!isOpen) {
     return null;
@@ -38,6 +37,9 @@ export const AccountModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (username == localStorage.getItem('userUsername') && email == localStorage.getItem('userEmail') && password == '') {
+        return;
+      }
       if (email !== '') validateEmail(email);
       if (password !== '') {
         validatePassword(password);
@@ -54,6 +56,9 @@ export const AccountModal: React.FC<Props> = ({ isOpen, onClose }) => {
         is_admin: localStorage.getItem('userRole') == 'admin' ? true : false,
       };
       await updateUserDetails(userDetails);
+
+      localStorage.clear();
+      location.reload();
     } catch (error: any) {
       //   errorHandler();
       setError(error.message);
@@ -109,7 +114,7 @@ export const AccountModal: React.FC<Props> = ({ isOpen, onClose }) => {
           )}
           {error && <div className="error-message">{error}</div>}
 
-          <button>Save</button>
+          <button>Save and logout</button>
         </form>
       </div>
     </div>

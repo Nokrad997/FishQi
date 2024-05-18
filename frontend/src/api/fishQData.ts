@@ -11,3 +11,15 @@ export async function send(data: FishQDbData) {
         throw new Error(error.message || 'Failed in sending fishQ');
     }
 }
+
+export async function getFishq() {
+    try {
+        const response = await api.get(`fishq/`);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Failed in getting fishQ: ', error);
+
+        throw new Error(error.message || 'Failed in getting fishQ');
+    }
+}

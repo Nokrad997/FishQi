@@ -1,4 +1,5 @@
-import { getPhoto, send } from "../api/filesData";
+import { getPhoto, getWords, send } from "../api/filesData";
+import defaultPhoto from '../assets/icons/image.png';
 
 const useFiles = () => {
     const sendFiles = async (data: FilesData) => {
@@ -22,11 +23,23 @@ const useFiles = () => {
         } catch (error: any) {
             console.log('Failed in getting photo: ', error);
 
-            throw new Error(error.message || 'Failed in getting photo');
+            return defaultPhoto;
         }
     }
 
-    return { sendFiles, getPhotoFromFtp };
+    const getWordsFromFtp = async (ftpPath: string) => {
+        try {
+            const response = await getWords(ftpPath);
+
+            return response;
+        } catch (error: any) {
+            console.log('Failed in getting words: ', error);
+
+            return [];
+        }
+    };
+
+    return { sendFiles, getPhotoFromFtp, getWordsFromFtp };
 };
 
 export default useFiles;

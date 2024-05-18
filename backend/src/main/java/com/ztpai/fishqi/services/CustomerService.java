@@ -9,6 +9,7 @@ import com.ztpai.fishqi.DTO.CustomerDTO;
 import com.ztpai.fishqi.DTO.UpdateCustomerDTO;
 import com.ztpai.fishqi.entity.Customer;
 import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
+import com.ztpai.fishqi.exceptions.UserDoesntExistException;
 
 @Service
 public class CustomerService {
@@ -31,6 +32,16 @@ public class CustomerService {
         List<CustomerDTO> customerDTOs = customers.stream().map(Customer::convertToDTO).toList();
 
         return customerDTOs;
+    }
+
+    public CustomerDTO getCustomerByEmail(String email) throws UserDoesntExistException{
+        Customer customer = this.customerSharedService.getCustomerByEmail(email);
+
+        if(customer == null) {
+            throw new UserDoesntExistException("User with that email does not exist");
+        }
+
+        return customer.convertToDTO();
     }
 
     public CustomerDTO updateCustomer(UpdateCustomerDTO requestCustomer, Long userId) {

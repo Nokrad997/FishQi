@@ -8,12 +8,23 @@ import useFishQ from '../../hooks/useFishQ';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  initialData?: {
+    img?: string;
+    title?: string;
+    language?: string;
+    visibility?: string;
+    description?: string;
+    words?: FishQData[];
+  } | null;
 }
 
-export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
+export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }) => {
+  console.log(initialData);
   const [file, setFile] = useState<File | null>(null);
   const [inputs, setInputs] = useState<FishQData[]>([]);
   const [nextKey, setNextKey] = useState(0);
+  const { title, language, visibility, description, words, img } = initialData || {};
+  console.log(words);
   const { sendSet, updateSet } = useFishQSet();
   const { sendFiles } = useFiles();
   const { sendFishQ } = useFishQ();
@@ -24,6 +35,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
       setFile(null);
       setInputs([]);
       setNextKey(0);
+      addFishQHandler();
     }
   }, [isOpen]);
 
@@ -65,7 +77,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
         language: (document.getElementById('language') as HTMLInputElement).value,
         visibility: (document.getElementById('visibility') as HTMLSelectElement).value,
         description: (document.getElementById('description') as HTMLInputElement).value,
-      }
+      };
       const setResponse = await sendSet(setData);
       console.log(setResponse);
 
@@ -73,7 +85,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
       const fishqs = inputs.map(({ word, translation }) => ({
         key: i++,
         word: word,
-        translation: translation
+        translation: translation,
       }));
 
       const data = {
@@ -94,12 +106,11 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
         setId: setResponse.setId,
         ftpWordsPath: filesResponse[1].ftpPath,
       };
-      
+
       await updateSet(updateSetData);
       await sendFishQ(fishQWordsData);
 
       onClose();
-
     } catch (error: any) {
       setError(error.message);
     }
@@ -119,7 +130,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
           <div className="setInformation">
             <div className="imageContainer" onClick={triggerFileInput}>
               <img
-                src={file ? URL.createObjectURL(file) : 'src/assets/icons/image.png'}
+                src={file ? URL.createObjectURL(file) : img ? img : 'src/assets/icons/image.png'}
                 alt="setImage"
                 className="setImage"
                 width={200}
@@ -135,30 +146,41 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
             </div>
 
             <div className="setDetails">
-              <input type="text" id="title" placeholder="Type in set title" required />
-              <input type="text" id="language" placeholder="Type in set language" required />
-              <select id="visibility" name="visibility" defaultValue="Choose visibility option">
+              <input type="text" id="title" placeholder="Type in set title" defaultValue={title} required />
+              <input type="text" id="language" placeholder="Type in set language" defaultValue={language} required />
+              <select
+                id="visibility"
+                name="visibility"
+                defaultValue={visibility ? visibility : 'Choose visibility option'}
+              >
                 <option value="public">Public</option>
                 <option value="private">Private</option>
               </select>
             </div>
 
             <div className="setDescription">
-              <input type="text" id="description" placeholder="Write description for this set" />
+              <input
+                type="text"
+                id="description"
+                placeholder="Write description for this set"
+                defaultValue={description}
+                required
+              />
             </div>
           </div>
           <div className="fisQInputs">
-            {inputs.map(({ key, word, translation }) => (
+            {inputs.map(({ key }) => (
               <FishQInput
                 key={key}
-                wordValue={word}
-                translationValue={translation}
+                wordValue={words && words[key] ? words[key].word : ''}
+                translationValue={words && words[key] ? words[key].translation : ''}
                 onWordChange={(e) => handleWordChange(key, e.target.value)}
                 onTranslationChange={(e) => handleTranslationChange(key, e.target.value)}
                 fun={() => deleteInputFieldHandler(key)}
               />
             ))}
           </div>
+
           <button type="button" onClick={addFishQHandler}>
             <img src="src/assets/icons/add.png" alt="addFishQ" width={40} />
           </button>
@@ -169,3 +191,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose }) => {
     </div>
   );
 };
+
+
+
+// zdjęcia są źle przypisywane, słowa pobrane z ftp równiez cos sie niefajnego odkurwia

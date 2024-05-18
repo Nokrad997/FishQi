@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ztpai.fishqi.DTO.CustomerDTO;
 import com.ztpai.fishqi.DTO.UpdateCustomerDTO;
 import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
+import com.ztpai.fishqi.exceptions.UserDoesntExistException;
 import com.ztpai.fishqi.jsonViews.Views;
 import com.ztpai.fishqi.services.CustomerService;
 
@@ -37,11 +38,6 @@ public class CustomerController {
     @JsonView(Views.Public.class)
     public ResponseEntity<?> retrieve(@PathVariable Long userId, Authentication auth) {
         try {
-            if (!this.customerService.checkIfAdmin(auth.getName())) {
-                if (!auth.getName().equals(this.customerService.getCustomerByID(userId).getEmail())) {
-                    return ResponseEntity.badRequest().body("You can't retrieve other users data");
-                }
-            }
             CustomerDTO user = customerService.getCustomerByID(userId);
 
             return ResponseEntity.ok(user);
@@ -54,20 +50,24 @@ public class CustomerController {
 
     @GetMapping(value = "/", produces = "application/json")
     @JsonView(Views.Public.class)
-    public ResponseEntity<?> retrieveAll(Authentication auth) {
+    public ResponseEntity<?> retrieveAll() {
         try {
             List<CustomerDTO> customers = this.customerService.getAllCustomers();
-            if (!this.customerService.checkIfAdmin(auth.getName())) {
-                CustomerDTO customer = this.customerService.getAllCustomers().stream()
-                        .filter(user -> user.getEmail().equals(auth.getName()))
-                        .findFirst()
-                        .orElseThrow(() -> new NoSuchElementException("No customer with given email"));
-
-                return ResponseEntity.ok(customer);
-            }
 
             return ResponseEntity.ok(customers);
         } catch (Exception e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/email/{email}", produces = "application/json")
+    public ResponseEntity<?> retrieveByEmail(@PathVariable String email) {
+        try {
+            CustomerDTO user = customerService.getCustomerByEmail(email);
+
+            return ResponseEntity.ok(user);
+        } catch (UserDoesntExistException e) {
 
             return ResponseEntity.badRequest().body(e.getMessage());
         }

@@ -41,7 +41,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         } else if (request.getMethod().equals("GET")
-                && (path.contains("/api/fishqset") || path.contains("/api/files/getphoto"))) {
+                && (path.contains("/api/fishqset") || path.contains("/api/files/getphoto"))
+                || path.contains("api/customer")
+                || path.contains("api/rating")
+                || path.contains("api/fishq")
+                || path.contains("api/files/getwords")) {
 
             chain.doFilter(request, response);
             return;

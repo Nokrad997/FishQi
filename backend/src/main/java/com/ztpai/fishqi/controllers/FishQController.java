@@ -23,7 +23,7 @@ public class FishQController {
         this.fishqService = fishqService;
     }
 
-    @GetMapping(value = "/{fishQId}", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/{fishQId}", produces = "application/json")
     public ResponseEntity<?> retrieve(@PathVariable Long fishQId) {
         try {
             return ResponseEntity.ok(this.fishqService.getFishQByID(fishQId));
@@ -32,7 +32,7 @@ public class FishQController {
         }
     }
 
-    @GetMapping(value = "/", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/", produces = "application/json")
     public ResponseEntity<?> retrieveAll() {
         try {
             return ResponseEntity.ok(this.fishqService.getAll());

@@ -8,10 +8,22 @@ export async function getUserData(): Promise<UserData> {
     return response.data;
   } catch (error: any) {
     console.log('Failed in retreiving user data: ', error);
-    
+
     throw new Error(error.message || 'Failed in retreiving user data');
 
     //trzeba zrobić bardziej dogłębną obsługę błędów
+  }
+}
+
+export async function getUserDataEmail(email: string): Promise<UserData> {
+  try {
+    const response = await api.get(`customer/email/${email}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.log('Failed in retreiving user data: ', error);
+
+    throw new Error(error.message || 'Failed in retreiving user data');
   }
 }
 
@@ -21,11 +33,21 @@ export async function updateUserData(user: UserData): Promise<UserData> {
     const response = await api.put(`customer/${user.user_id}`, user);
 
     return response.data;
-
-  } catch(error: any) {
+  } catch (error: any) {
     console.log('Failed in updating user data: ', error);
 
     throw new Error(error.message || 'Failed in updating user data');
   }
+}
 
+export async function getUserById(id: number) {
+  try {
+    const response = await api.get(`customer/${id}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.log('Failed in retreiving user data: ', error);
+
+    throw new Error(error.message || 'Failed in retreiving user data');
+  }
 }
