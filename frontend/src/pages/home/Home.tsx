@@ -8,7 +8,6 @@ import defaultImage from '../../assets/icons/image.png';
 import useUserDetails from '../../hooks/useUserDetails';
 import useRating from '../../hooks/useRating';
 import useFishQ from '../../hooks/useFishQ';
-import { getWords } from '../../api/filesData';
 
 interface editData {
   title: string;
@@ -20,15 +19,18 @@ interface editData {
 }
 interface HomeProps {
   onEditClick: (data: editData) => void;
+  onViewClick: (data: ViewData) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onEditClick }) => {
+const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick }) => {
   const { getSets } = useFishQSet();
   const { getPhotoFromFtp, getWordsFromFtp } = useFiles();
   const { retrieveFishqs } = useFishQ();
   const { getUserId } = useUserDetails();
-  const { getAllRatings } = useRating();
+  const { getAllRatings, createRating, updateRating } = useRating();
 
+  const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
+  console.log(userId);
   const [sets, setSets] = useState([]);
   const [mostPopularSets, setMostPopularSets] = useState([]);
   const [highestRatingSets, setHighestRatingSets] = useState([]);
@@ -50,31 +52,44 @@ const Home: React.FC<HomeProps> = ({ onEditClick }) => {
             acc[rating.fishQSet.setId] = {
               sum: 0,
               count: 0,
+              ratedBy: [],
+              userRating: [],
             };
           }
           acc[rating.fishQSet.setId].sum += rating.score;
           acc[rating.fishQSet.setId].count++;
+          acc[rating.fishQSet.setId].ratedBy.push(rating.customer.userId);
+          acc[rating.fishQSet.setId].userRating.push(rating.score);
           return acc;
         }, {});
 
-        ratings = Object.entries(ratingsMap).map(([setId, { sum, count }]) => ({
-          setId: setId,
+        const calculatedRatings = Object.entries(ratingsMap).map(([setId, { sum, count, ratedBy, userRating }]) => ({
+          setId: parseInt(setId),
           score: count > 0 ? sum / count : 0,
           count: count,
+          ratedBy: ratedBy,
+          userRating: userRating,
         }));
 
         const setsWithPhotosAndOwners = await Promise.all(
           setsData.map(async (set, index) => {
             const ownerUsername = await getUserId(set.owner_id);
+            const rating = calculatedRatings.find((r: any) => r.setId === set.setId) || {
+              score: 0,
+              count: 0,
+              ratedBy: [],
+              userRating: [],
+            };
             return {
               ...set,
               photo: photosResults[index],
               owner: ownerUsername.username,
-              rating: ratings.find((rating: any) => rating.setId == set.setId) || 0,
+              rating: rating,
             };
           }),
         );
 
+        // console.log(setsWithPhotosAndOwners);
         const fishqs = await retrieveFishqs();
 
         const setsWithFtpPath = setsWithPhotosAndOwners.map((set) => {
@@ -93,8 +108,8 @@ const Home: React.FC<HomeProps> = ({ onEditClick }) => {
             words: wordsResults[index],
           };
         });
-  
-        setSets(SetsWithAllData);      
+
+        setSets(SetsWithAllData);
       } catch (error) {
         console.error('Error fetching sets or photos:', error);
       }
@@ -124,9 +139,8 @@ const Home: React.FC<HomeProps> = ({ onEditClick }) => {
 
     const fetchMySets = async () => {
       try {
-        if (localStorage.getItem('user_id') != null) {
-          const mySets = Array.from(sets).filter((set) => set.owner_id == localStorage.getItem('user_id'));
-          console.log(mySets);
+        if (userId != null) {
+          const mySets = Array.from(sets).filter((set) => set.owner_id == localStorage.getItem('userId'));
           setMySets(mySets);
         }
       } catch (error) {
@@ -136,11 +150,12 @@ const Home: React.FC<HomeProps> = ({ onEditClick }) => {
 
     const fetchMyStarred = async () => {
       try {
-        if (localStorage.getItem('user_id') != null) {
-          const userId = localStorage.getItem('user_id');
+        if (userId != null) {
           const ratings = await getAllRatings();
           const myStarredSets = Array.from(sets).filter((set) => {
-            return ratings.some((rating) => rating.customer.user_id == userId && rating.fishQSet.setId === set.setId);
+            return ratings.some(
+              (rating: any) => rating.customer.userId == userId && rating.fishQSet.setId === set.setId,
+            );
           });
           setMyStarredSets(myStarredSets);
         }
@@ -155,7 +170,73 @@ const Home: React.FC<HomeProps> = ({ onEditClick }) => {
     fetchMyStarred();
   }, [sets]);
 
-  const handleEditClick = (title, language, visibility, description, img, words) => {
+  const handleRatingChange = (setId: number, newRating: number) => {
+    if (userId === null) {
+      console.log('User not logged in');
+      return;
+    }
+    let data = {
+      fishQSetId: setId,
+      customerId: Number.parseInt(userId),
+      score: newRating,
+    };
+    console.log('data', data);
+
+    setSets((prevSets) => {
+      const newSets = prevSets.map((set) => {
+        if (set.setId === setId) {
+          const userIndex = set.rating.ratedBy.indexOf(Number.parseInt(userId));
+          console.log(userIndex);
+          let updatedUserRating;
+          let updatedRatedBy;
+
+          if (userIndex >= 0) {
+            updatedUserRating = set.rating.userRating.map((rating, index) =>
+              index === userIndex ? newRating : rating,
+            );
+            updatedRatedBy = set.rating.ratedBy;
+            updateRating(data);
+          } else {
+            updatedUserRating = [...set.rating.userRating, newRating];
+            updatedRatedBy = [...set.rating.ratedBy, Number.parseInt(userId)];
+            createRating(data);
+          }
+
+          const newRatingSum = updatedUserRating.reduce((acc, curr) => acc + curr, 0);
+          const newRatingCount = updatedUserRating.length;
+          const newScore = newRatingCount > 0 ? newRatingSum / newRatingCount : 0;
+
+          const updatedSet = {
+            ...set,
+            rating: {
+              ...set.rating,
+              userRating: updatedUserRating,
+              ratedBy: updatedRatedBy,
+              count: newRatingCount,
+              score: Math.round(newScore),
+            },
+          };
+
+          return updatedSet;
+        }
+        return set;
+      });
+      return newSets;
+    });
+    console.log(sets);
+  };
+
+  const handleEditClick = (
+    title: string,
+    language: string,
+    visibility: string,
+    description: string,
+    img: string,
+    words: any,
+    ftpWordsPath: string,
+    ftpImagePath: string,
+    setId: number,
+  ) => {
     const data = {
       title: title,
       description: description,
@@ -163,9 +244,28 @@ const Home: React.FC<HomeProps> = ({ onEditClick }) => {
       visibility: visibility,
       img: img,
       words: words,
+      ftpWordsPath: ftpWordsPath,
+      ftpImagePath: ftpImagePath,
+      setId: setId,
     };
-    console.log(data);
+    // console.log(data);
     onEditClick(data);
+  };
+
+  const handleViewClick = (set: any) => {
+    console.log('words', set.words);
+
+    const wasRated = userId === null || set.rating.ratedBy.includes(Number.parseInt(userId));
+    const userRating =
+      userId === null ? 0 : set.rating.userRating[set.rating.ratedBy.indexOf(Number.parseInt(userId))] || 0;
+    const data = {
+      title: set.title,
+      fishQs: set.words,
+      wasRated: wasRated,
+      rating: userRating,
+      onRatingChange: (newRating: number) => handleRatingChange(set.setId, newRating),
+    };
+    onViewClick(data);
   };
 
   return (
@@ -186,59 +286,81 @@ const Home: React.FC<HomeProps> = ({ onEditClick }) => {
       </div>
       <div className="homeCards">
         <div className="mostPopularCard">
-          {mostPopularSets.map((set, index) => (
-            <HomeCard
-              key={index}
-              title={set.title}
-              owner={set.owner}
-              description={set.description}
-              photo={set.photo}
-              rating={set.rating.score}
-              mySets={false}
-            />
-          ))}
+          {mostPopularSets.map((set, index) => {
+            return (
+              <HomeCard
+                key={index}
+                title={set.title}
+                owner={set.owner}
+                description={set.description}
+                photo={set.photo}
+                rating={set.rating.score}
+                mySets={false}
+                onViewClick={() => handleViewClick(set)}
+              />
+            );
+          })}
         </div>
         <div className="highestRatingCard" style={{ display: 'none' }}>
-          {highestRatingSets.map((set, index) => (
-            <HomeCard
-              key={index}
-              title={set.title}
-              owner={set.owner}
-              description={set.description}
-              photo={set.photo}
-              rating={set.rating.score}
-              mySets={false}
-            />
-          ))}
+          {highestRatingSets.map((set, index) => {
+            return (
+              <HomeCard
+                key={index}
+                title={set.title}
+                owner={set.owner}
+                description={set.description}
+                photo={set.photo}
+                rating={set.rating.score}
+                mySets={false}
+                onViewClick={() => handleViewClick(set)}
+              />
+            );
+          })}
         </div>
         <div className="mySetsCard" style={{ display: 'none' }}>
-          {mySets.map((set, index) => (
-            <HomeCard
-              key={index}
-              title={set.title}
-              owner={set.owner}
-              description={set.description}
-              photo={set.photo}
-              rating={set.rating.score}
-              mySets={true}
-              onEditClick={() =>
-                handleEditClick(set.title, set.language, set.visibility, set.description, set.photo, set.words)
-              }
-            />
-          ))}
+          {mySets.map((set, index) => {
+            return (
+              <HomeCard
+                key={index}
+                title={set.title}
+                owner={set.owner}
+                description={set.description}
+                photo={set.photo}
+                rating={set.rating.score}
+                mySets={true}
+                onEditClick={() =>
+                  handleEditClick(
+                    set.title,
+                    set.language,
+                    set.visibility,
+                    set.description,
+                    set.photo,
+                    set.words,
+                    set.ftpWordsPath,
+                    set.ftpImagePath,
+                    set.setId,
+                  )
+                }
+                onViewClick={() => handleViewClick(set)}
+              />
+            );
+          })}
         </div>
         <div className="myStarredSetsCard" style={{ display: 'none' }}>
-          {myStarredSets.map((set, index) => (
-            <HomeCard
-              key={index}
-              title={set.title}
-              owner={set.owner}
-              description={set.description}
-              photo={set.photo}
-              rating={set.rating.score}
-              mySets={false}
-            />
-          ))}
+          {myStarredSets.map((set, index) => {
+            return (
+              <HomeCard
+                key={index}
+                title={set.title}
+                owner={set.owner}
+                description={set.description}
+                photo={set.photo}
+                rating={set.rating.score}
+                mySets={false}
+                onViewClick={() => handleViewClick(set)}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

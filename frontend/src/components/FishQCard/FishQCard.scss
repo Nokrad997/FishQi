@@ -1,0 +1,31 @@
+.fishQ-card {
+    background-color: lightgrey;
+    width: 100%;
+    height: 100%;
+    border-radius: 15%;
+
+    .fishQ-card-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .fishQ-card-content-word .fishQ-card-content-translation {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+
+            .fishQ-card-content-word {
+                font-size: 2rem;
+                font-weight: bold;
+            }
+
+            .fishQ-card-content-translation {
+                font-size: 1.5rem;
+                font-weight: bold;
+            }
+        }
+    }
+}

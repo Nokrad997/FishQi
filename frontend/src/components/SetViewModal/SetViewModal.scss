@@ -1,0 +1,78 @@
+.setView-modal {
+  display: block;
+  background-color: rgba(128, 128, 128, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.setView-modal.hidden {
+  display: none;
+}
+
+.setView-card {
+  background-color: #fff;
+  width: 70vw;
+  height: 60vh;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  border-radius: 40px;
+
+  .reject-icon {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+    cursor: pointer;
+    z-index: 1002;
+  }
+}
+
+.setView-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+
+  .setView-card-header {
+    height: 20%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .setView-card-block {
+    display: flex;
+    flex-direction: row;
+    height: 60%;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+
+    .setView-card-block-fishQ {
+        width: 60%;
+        height: 100%;
+    }
+  }
+
+  .setView-card-footer {
+    height: 20%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .prevArrow {
+    rotate: 180deg;
+  }
+}

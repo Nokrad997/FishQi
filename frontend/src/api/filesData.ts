@@ -46,3 +46,26 @@ export async function getWords(ftpPath: string) {
     throw new Error(error.message || 'Failed in getting words');
   }
 }
+
+export async function updateFilesOnFtp(data: FilesData) {
+  try {
+    const formData = new FormData();
+    formData.append('setId', data.setId.toString());
+    if (data.photo) formData.append('photo', data.photo, data.photo.name);
+    formData.append('fishqs', JSON.stringify(data.fishqs));
+
+    const response = api.put(`files/update/${data.setId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    
+    });
+
+    return response.data;
+
+  } catch(error: any) {
+    console.log('Failed in updating files: ', error);
+
+    throw new Error(error.message || 'Failed in updating files');
+  }
+}

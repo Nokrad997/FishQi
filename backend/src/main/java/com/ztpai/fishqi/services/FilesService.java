@@ -69,7 +69,7 @@ public class FilesService {
     public List<Files> saveFile(FilesDTO requestFile, String ownerEmail) throws IOException {
         MultipartFile photo = requestFile.getPhoto();
         List<FishQData> fishQDataList = requestFile.getFishQDataList(this.objectMapper);
-        Long ownerId = this.customerRepository.findByEmail(ownerEmail).getUser_id();
+        Long ownerId = this.customerRepository.findByEmail(ownerEmail).getUserId();
         String ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(requestFile.getSetId()) + "/"
         + "photo.png";
         Files file = new Files();
@@ -104,8 +104,55 @@ public class FilesService {
     public String getFile(String filePath) throws IOException {
         String localPath = "src/main/resources/static/temp/";
         this.ftpUploader.downloadFile(filePath, localPath);
-        String fileName = filePath.split("/")[filePath.split("/").length - 1];
+        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
         return localPath + fileName;
+    }    
+
+    public String updateFiles(FilesDTO files, String ownerEmail) throws IOException {
+        try {
+            MultipartFile photo = files.getPhoto();
+            List<FishQData> fishQDataList = files.getFishQDataList(this.objectMapper);
+            Long ownerId = this.customerRepository.findByEmail(ownerEmail).getUserId();
+            String ftpPath = "FISHQI/" + Long.toString(ownerId) + "/" + Long.toString(files.getSetId()) + "/"
+            + "photo.png";
+            Files file = this.filesRepository.findByFtpPath(ftpPath);
+    
+            if (photo != null) {
+                if (file == null) {
+                    file = new Files();
+                    file.setFtpPath(ftpPath);
+                    this.filesRepository.save(file);
+                } else {
+                    file.setFtpPath(ftpPath);
+                    this.filesRepository.save(file);
+                }
+
+                this.ftpUploader.uploadFile(photo.getInputStream(), ftpPath);
+            }
+    
+            JSONObject jsonObject = new JSONObject();
+            ftpPath = "FISHQI/" + ownerId + "/" + files.getSetId() + "/" + "words.json";
+    
+            for (FishQData fishQData : fishQDataList) {
+                jsonObject.put(fishQData.getWord(), fishQData.getTranslation());
+            }
+    
+            InputStream inputStream = new ByteArrayInputStream(jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8));
+            this.ftpUploader.uploadFile(inputStream, ftpPath);
+
+            Files file2 = this.filesRepository.findByFtpPath(ftpPath);
+            if (file2 == null) {
+                file2 = new Files(ftpPath);
+                this.filesRepository.save(file2);
+            } else {
+                file2.setFtpPath(ftpPath);
+                this.filesRepository.save(file2);
+            }
+    
+            return "nie wyjebao sie";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 }
 

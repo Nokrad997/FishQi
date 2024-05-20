@@ -29,7 +29,7 @@ public class RegistrationService {
 
     private CustomerDTO convertToDTO(Customer customer) {
         CustomerDTO dto = new CustomerDTO();
-        dto.setUser_id(customer.getUser_id());
+        dto.setUserId(customer.getUserId());
         dto.setEmail(customer.getEmail());
         dto.setPassword(customer.getPassword());
         dto.setUsername(customer.getUsername());

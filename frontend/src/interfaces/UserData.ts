@@ -1,5 +1,5 @@
 export default interface UserData {
-    user_id: number;
+    userId: number;
     username: string;
     email: string;
     password?: string;

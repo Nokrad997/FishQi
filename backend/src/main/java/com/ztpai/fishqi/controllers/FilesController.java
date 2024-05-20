@@ -16,7 +16,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.InputStreamResource;
@@ -38,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/files")
 public class FilesController {
     private FilesService filesService;
+    private final Lock lock = new ReentrantLock();
 
     public FilesController(FilesService filesService) {
         this.filesService = filesService;
@@ -77,36 +82,66 @@ public class FilesController {
         return "file deleted";
     }
 
+    @PutMapping(value = "/update/{fileId}", consumes = "multipart/form-data", produces = "application/json")
+    public ResponseEntity<?> updateFiles(@ModelAttribute FilesDTO files, @PathVariable Long fileId, Authentication auth) {
+        try {
+            return ResponseEntity.ok(this.filesService.updateFiles(files, auth.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping(value = "/getphoto", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getPhoto(@RequestParam String filePath) {
+        lock.lock();
         try {
             String downloadedFilePath = this.filesService.getFile(filePath);
-            File file = new File(downloadedFilePath);
-            InputStream in = new FileInputStream(file);
+            Path path = Paths.get(downloadedFilePath);
+            File file = path.toFile();
+            byte[] fileContent;
+
+            try (InputStream in = new FileInputStream(file)) {
+                fileContent = StreamUtils.copyToByteArray(in);
+            }
+
+            java.nio.file.Files.delete(path);
 
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"")
-                    .contentLength(file.length())
+                    .contentLength(fileContent.length)
                     .contentType(MediaType.IMAGE_PNG)
-                    .body(StreamUtils.copyToByteArray(in));
+                    .body(fileContent);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage().getBytes());
+        } finally {
+            lock.unlock();
         }
     }
 
     @GetMapping(value = "/getwords", produces = "application/json")
     public ResponseEntity<?> getWords(@RequestParam String filePath) {
+        lock.lock();
         try {
             String downloadedFilePath = this.filesService.getFile(filePath);
-            File file = new File(downloadedFilePath);
-            String jsonData = new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+            System.out.println(downloadedFilePath);
+            Path path = Paths.get(downloadedFilePath);
+            File file = path.toFile();
+            String jsonData;
+
+            try (InputStream in = new FileInputStream(file)) {
+                jsonData = new String(StreamUtils.copyToByteArray(in), StandardCharsets.UTF_8);
+            }
 
             ObjectMapper objectMapper = new ObjectMapper();
             Object jsonObject = objectMapper.readValue(jsonData, Object.class);
+            System.out.println(jsonObject);
+            java.nio.file.Files.delete(path);
 
             return ResponseEntity.ok(jsonObject);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } finally {
+            lock.unlock();
         }
     }
 }

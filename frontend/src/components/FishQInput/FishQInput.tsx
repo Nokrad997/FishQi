@@ -1,8 +1,8 @@
 import "./FishQInput.scss"
 
 interface Props {
-    wordValue: string;
-    translationValue: string;
+    wordValue?: string;
+    translationValue?: string;
     onWordChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onTranslationChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     fun: () => void;

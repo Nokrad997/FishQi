@@ -10,6 +10,7 @@ import { LoginModal } from './components/loginModal/LoginModal';
 import { AccountModal } from './components/AccountModal/AccountModal';
 import { validateToken } from './api/axios';
 import { CreateSetModal } from './components/CreateSetModal/CreateSetModal';
+import { SetViewModal } from './components/SetViewModal/SetViewModal';
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -29,27 +30,21 @@ const App: React.FC = () => {
     checkSession();
   }, []);
 
-  interface editData{
-    title: string;
-    description: string;
-    language: string;
-    visibility: string;
-    img: string;
-    words: FishQData[];
-  
-  }
-
   const [editData, setEditData] = useState<editData | null>(null);
+  const [viewData, setViewData] = useState<ViewData | null>(null);
+
   const [modalVisibility, setModalVisibility] = useState<{
     registerModal: boolean;
     loginModal: boolean;
     accountModal: boolean;
     createSetModal: boolean;
+    setViewModal: boolean;
   }>({
     registerModal: false,
     loginModal: false,
     accountModal: false,
     createSetModal: false,
+    setViewModal: false,
   });
 
   const toggleModal = (modalName: keyof typeof modalVisibility, data?: any): void => {
@@ -59,6 +54,14 @@ const App: React.FC = () => {
     } else {
       setEditData(null);
     }
+
+    if (modalName === 'setViewModal' && data) {
+      console.log(data);
+      setViewData(data);
+    } else {
+      setViewData(null);
+    }
+
     setModalVisibility((prevState) => ({
       ...prevState,
       [modalName]: !prevState[modalName],
@@ -74,12 +77,13 @@ const App: React.FC = () => {
         onCreateSetClick={() => toggleModal('createSetModal')}
       />
       <Routes>
-        <Route path="/" element={<Home onEditClick={(data) => toggleModal('createSetModal', data)} />} />
+        <Route path="/" element={<Home onEditClick={(data) => toggleModal('createSetModal', data)} onViewClick={(data) => toggleModal('setViewModal', data)} />} />
       </Routes>
       <RegisterModal isOpen={modalVisibility.registerModal} onClose={() => toggleModal('registerModal')} />
       <LoginModal isOpen={modalVisibility.loginModal} onClose={() => toggleModal('loginModal')} />
       <AccountModal isOpen={modalVisibility.accountModal} onClose={() => toggleModal('accountModal')} />
       <CreateSetModal isOpen={modalVisibility.createSetModal} onClose={() => toggleModal('createSetModal')} initialData={editData}/>
+      <SetViewModal isOpen={modalVisibility.setViewModal} onClose={() => toggleModal('setViewModal') } initialData={viewData} />
     </Router>
   );
 };

@@ -26,6 +26,12 @@ public class Rating {
 
     public Rating() {}
 
+    public Rating(FishQSet fishQSet, Customer customer, Integer score) {
+        this.fishQSet = fishQSet;
+        this.customer = customer;
+        this.score = score;
+    }
+
     public RatingDTO convertToDTO() {
         RatingDTO ratingDTO = new RatingDTO();
         ratingDTO.setRatingId(this.ratingId);

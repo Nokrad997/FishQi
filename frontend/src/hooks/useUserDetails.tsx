@@ -4,7 +4,7 @@ import UserData from '../interfaces/UserData';
 const useUserDetails = () => {
   const checkUpdatedData = (user: UserData): UserData => {
     const updatedUser: UserData = {
-      user_id: user.user_id,
+      userId: user.userId,
       username:
         user.username != localStorage.getItem('userUsername')
           ? user.username
@@ -22,7 +22,7 @@ const useUserDetails = () => {
       const response = await getUserData();
       console.log(response);
 
-      localStorage.setItem('user_id', response.user_id.toString());
+      localStorage.setItem('userId', response.userId.toString());
       localStorage.setItem('userUsername', response.username);
       localStorage.setItem('userEmail', response.email);
       localStorage.setItem('userRole', response.is_admin == true ? 'admin' : 'user');
@@ -37,7 +37,7 @@ const useUserDetails = () => {
     try {
       const response = await getUserDataEmail(email);
       
-      localStorage.setItem('user_id', response.user_id.toString());
+      localStorage.setItem('userId', response.userId.toString());
       localStorage.setItem('userUsername', response.username);
       localStorage.setItem('userEmail', response.email);
       localStorage.setItem('userRole', response.is_admin == true ? 'admin' : 'user');
@@ -55,7 +55,7 @@ const useUserDetails = () => {
       user = checkUpdatedData(user);
       const response = await updateUserData(user);
 
-      localStorage.setItem('user_id', response.user_id.toString());
+      localStorage.setItem('userId', response.userId.toString());
       localStorage.setItem('userUsername', response.username);
       localStorage.setItem('userEmail', response.email);
       localStorage.setItem('userRole', response.is_admin == true ? 'admin' : 'user');

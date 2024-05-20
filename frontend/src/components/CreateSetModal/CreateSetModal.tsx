@@ -15,27 +15,39 @@ interface Props {
     visibility?: string;
     description?: string;
     words?: FishQData[];
+    ftpWordsPath?: string;
+    ftpImagePath?: string;
+    setId: number;
   } | null;
 }
 
 export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }) => {
-  console.log(initialData);
   const [file, setFile] = useState<File | null>(null);
   const [inputs, setInputs] = useState<FishQData[]>([]);
   const [nextKey, setNextKey] = useState(0);
-  const { title, language, visibility, description, words, img } = initialData || {};
-  console.log(words);
+  const [ftpWordsPath, setFtpWordsPath] = useState<string>('');
+  const { title, language, visibility, description, words, img, ftpImagePath, setId } = initialData || {};
   const { sendSet, updateSet } = useFishQSet();
-  const { sendFiles } = useFiles();
+  const { sendFiles, updateFiles } = useFiles();
   const { sendFishQ } = useFishQ();
   const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    setFtpWordsPath('FISHQI/' + localStorage.getItem('userId') + '/' + setId + '/words.json');
+    console.log(ftpWordsPath);
+  }, [ftpImagePath]);
 
   useEffect(() => {
     if (!isOpen) {
       setFile(null);
       setInputs([]);
       setNextKey(0);
-      addFishQHandler();
+    } else {
+      if (words !== undefined && typeof words === 'object' && words !== null) {
+        Object.entries(words).forEach(([key, value]) => {
+          addFishQHandler(key, value);
+        });
+      }
     }
   }, [isOpen]);
 
@@ -50,9 +62,12 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
     document.getElementById('fileInput').click();
   };
 
-  const addFishQHandler = (): void => {
-    setInputs((inputs) => [...inputs, { key: nextKey, word: '', translation: '' }]);
-    setNextKey(nextKey + 1);
+  const addFishQHandler = (passedWord: string | null, passedTranslation: string | null): void => {
+    const word = passedWord || '';
+    const translation = passedTranslation || '';
+
+    setInputs((inputs) => [...inputs, { key: nextKey, word: word, translation: translation }]);
+    setNextKey((prevKey) => prevKey + 1);
   };
 
   const deleteInputFieldHandler = (key: number): void => {
@@ -78,39 +93,62 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
         visibility: (document.getElementById('visibility') as HTMLSelectElement).value,
         description: (document.getElementById('description') as HTMLInputElement).value,
       };
-      const setResponse = await sendSet(setData);
-      console.log(setResponse);
+      if (initialData) {
+        const updateSetData = {
+          setId: setId,
+          ...setData,
+        };
 
-      let i = 0;
-      const fishqs = inputs.map(({ word, translation }) => ({
-        key: i++,
-        word: word,
-        translation: translation,
-      }));
+        await updateSet(updateSetData);
 
-      const data = {
-        setId: setResponse.setId,
-        photo: file,
-        fishqs,
-      };
+        let i = 0;
+        const updateFileData = {
+          setId: setId,
+          photo: file,
+          fishqs: inputs.map(({ word, translation }) => ({
+            key: i++,
+            word: word,
+            translation: translation,
+          })),
+        };
 
-      console.log(data);
-      const filesResponse = await sendFiles(data);
+        await updateFiles(updateFileData);
+        onClose();
+      } else {
+        const setResponse = await sendSet(setData);
+        console.log(setResponse);
 
-      const updateSetData = {
-        setId: setResponse.setId,
-        ftpImagePath: filesResponse[0].ftpPath,
-      };
+        let i = 0;
+        const fishqs = inputs.map(({ word, translation }) => ({
+          key: i++,
+          word: word,
+          translation: translation,
+        }));
 
-      const fishQWordsData = {
-        setId: setResponse.setId,
-        ftpWordsPath: filesResponse[1].ftpPath,
-      };
+        const data = {
+          setId: setResponse.setId,
+          photo: file,
+          fishqs,
+        };
 
-      await updateSet(updateSetData);
-      await sendFishQ(fishQWordsData);
+        console.log(data);
+        const filesResponse = await sendFiles(data);
 
-      onClose();
+        const updateSetData = {
+          setId: setResponse.setId,
+          ftpImagePath: filesResponse[0].ftpPath,
+        };
+
+        const fishQWordsData = {
+          setId: setResponse.setId,
+          ftpWordsPath: filesResponse[1].ftpPath,
+        };
+
+        await updateSet(updateSetData);
+        await sendFishQ(fishQWordsData);
+
+        onClose();
+      }
     } catch (error: any) {
       setError(error.message);
     }
@@ -169,11 +207,11 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
             </div>
           </div>
           <div className="fisQInputs">
-            {inputs.map(({ key }) => (
+            {inputs.map(({ key, word, translation }) => (
               <FishQInput
                 key={key}
-                wordValue={words && words[key] ? words[key].word : ''}
-                translationValue={words && words[key] ? words[key].translation : ''}
+                wordValue={word || ''}
+                translationValue={translation || ''}
                 onWordChange={(e) => handleWordChange(key, e.target.value)}
                 onTranslationChange={(e) => handleTranslationChange(key, e.target.value)}
                 fun={() => deleteInputFieldHandler(key)}
@@ -191,7 +229,3 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
     </div>
   );
 };
-
-
-
-// zdjęcia są źle przypisywane, słowa pobrane z ftp równiez cos sie niefajnego odkurwia

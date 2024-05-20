@@ -1,7 +1,6 @@
 import React from 'react';
 import './HomeCard.scss';
 import star from '../../assets/icons/star.png';
-import cog from '../../assets/icons/cog.png';
 interface Props {
   title: string;
   owner: string;
@@ -9,14 +8,15 @@ interface Props {
   rating?: number;
   photo?: string;
   onEditClick?: () => void;
+  onViewClick?: () => void;
   mySets: boolean;
 }
 
-const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, mySets ,onEditClick }) => {
+const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, mySets, onEditClick, onViewClick }) => {
   return (
     <div className="card">
       <div className="card-body">
-        {photo && <img src={photo} alt="set" width={100} />}
+        {photo && <img src={photo} alt="set" width={100} height={100} />}
         <div className="car-header">
           <h3 className="card-title">{title}</h3>
           <p className="card-owner">Created by: {owner}</p>
@@ -37,7 +37,7 @@ const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, m
         {mySets && (
           <button className="card-button" onClick={onEditClick} >Edit</button>
         )}
-        <button className="card-button">View</button>
+        <button className="card-button" onClick={onViewClick}>View</button>
       </div>
     </div>
   );

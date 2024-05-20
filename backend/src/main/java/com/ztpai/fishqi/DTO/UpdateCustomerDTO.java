@@ -3,7 +3,7 @@ import lombok.Data;
 
 @Data
 public class UpdateCustomerDTO {
-    private Long user_id;
+    private Long userId;
     private String username;
     private String email;
     private String password;

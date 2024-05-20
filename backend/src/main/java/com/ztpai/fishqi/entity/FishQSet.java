@@ -41,7 +41,7 @@ public class FishQSet {
         fishQSetDTO.setTitle(this.title);
         fishQSetDTO.setLanguage(this.language);
         fishQSetDTO.setVisibility(this.visibility);
-        fishQSetDTO.setOwner_id(this.owner.getUser_id());
+        fishQSetDTO.setOwner_id(this.owner.getUserId());
         fishQSetDTO.setDescription(this.description);
 
         if(this.image != null)

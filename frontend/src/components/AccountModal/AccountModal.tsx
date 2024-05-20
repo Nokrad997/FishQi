@@ -46,10 +46,10 @@ export const AccountModal: React.FC<Props> = ({ isOpen, onClose }) => {
         validateMatchingPassword(password, matchingPassword);
       }
       console.log(password, matchingPassword)
-      let userId = localStorage.getItem('user_id');
+      let userId = localStorage.getItem('userId');
       let parseduserId = userId != null ? parseInt(userId) : 0;
       const userDetails: UserData = {
-        user_id: parseduserId,
+        userId: parseduserId,
         username: username,
         email: email,
         password: password,

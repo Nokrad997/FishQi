@@ -30,7 +30,7 @@ export async function getUserDataEmail(email: string): Promise<UserData> {
 export async function updateUserData(user: UserData): Promise<UserData> {
   try {
     console.log(user);
-    const response = await api.put(`customer/${user.user_id}`, user);
+    const response = await api.put(`customer/${user.userId}`, user);
 
     return response.data;
   } catch (error: any) {

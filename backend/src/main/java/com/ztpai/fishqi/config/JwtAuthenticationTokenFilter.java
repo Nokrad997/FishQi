@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -36,16 +37,16 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 path.contains("/api/auth/validateToken") ||
                 path.contains("/api/login") ||
                 path.contains("swagger-ui") ||
-                path.contains("/api/v3/api-docs")) {
+                path.contains("/api/v3/api-docs")){
 
             chain.doFilter(request, response);
             return;
         } else if (request.getMethod().equals("GET")
-                && (path.contains("/api/fishqset") || path.contains("/api/files/getphoto"))
+                && (path.contains("/api/fishqset") || path.contains("/api/files/getphoto")
                 || path.contains("api/customer")
                 || path.contains("api/rating")
                 || path.contains("api/fishq")
-                || path.contains("api/files/getwords")) {
+                || path.contains("api/files/getwords"))) {
 
             chain.doFilter(request, response);
             return;

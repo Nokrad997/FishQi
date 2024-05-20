@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 public class CustomerDTO {
     @JsonView(Views.Public.class)
-    private Long user_id;
+    private Long userId;
 
     @JsonView(Views.Public.class)
     @NotBlank(message = "Email is mandatory")
