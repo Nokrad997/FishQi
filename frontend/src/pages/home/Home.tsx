@@ -24,7 +24,6 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
-  const { getSets } = useFishQSet();
   const { getPhotoFromFtp, getWordsFromFtp } = useFiles();
   const { retrieveFishqs } = useFishQ();
   const { getUserId } = useUserDetails();
