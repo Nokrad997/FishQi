@@ -1,4 +1,3 @@
-import HomeCard from "../../components/homeCard/HomeCard";
 export function openTab(title: string) {
     const tabs = document.querySelectorAll('.homeCards > div');
     tabs.forEach(tab => {

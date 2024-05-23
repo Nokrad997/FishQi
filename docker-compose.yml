@@ -1,24 +1,22 @@
-version: '3.8'
+version: '3.7'
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+  ftp-server:
+    image: fauria/vsftpd
+    environment:
+      FTP_USER: root
+      FTP_PASS: root
+      PASV_MIN_PORT: 21100
+      PASV_MAX_PORT: 21110
     ports:
-      - "8080:8080"
+      - "21:21"
+      - "21100-21110:21100-21110"
+    volumes:
+      - ./ftpdata:/home/vsftpd
     networks:
-      - app-network
-
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    ports:
-      - "3000:80"
-    networks:
-      - app-network
+      - ftp-network
 
 networks:
-  app-network:
-    driver: bridge
+  ftp-network:
+    external: true
+    name: ftp-network

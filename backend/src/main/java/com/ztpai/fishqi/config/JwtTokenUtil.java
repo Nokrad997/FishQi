@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,11 +19,11 @@ import io.jsonwebtoken.Jwts;
 
 @Component
 public class JwtTokenUtil {
-    private SecretKey secretKey = Jwts.SIG.HS256.key().build();;
-
+    private SecretKey secretKey = Jwts.SIG.HS256.key().build();
+    
     public String generateToken(String email, boolean isAdmin) {
         String claims = isAdmin ? "admin" : "user";
-        long expirationTime = 1000 * 15;
+        long expirationTime = 1000 * 60 * 5;
 
         return Jwts.builder().subject(email).claim("role", claims).issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTime)).signWith(secretKey).compact();

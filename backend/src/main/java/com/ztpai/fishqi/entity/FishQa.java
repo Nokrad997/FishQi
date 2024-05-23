@@ -1,5 +1,7 @@
 package com.ztpai.fishqi.entity;
 
+import com.ztpai.fishqi.DTO.FishQDTO;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,17 +11,22 @@ public class FishQa {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long fishQa_id;
+    private Long fishQaId;
 
     @OneToOne
     @JoinColumn(name = "set_id", nullable = false)
     private FishQSet set;
-
+    
     @OneToOne
-    @JoinColumn(name = "file_id_front", nullable = false)
-    private Files fileFront;
+    @JoinColumn(name = "file_id", nullable = true)
+    private Files file;
 
-    @OneToOne
-    @JoinColumn(name = "file_id_back", nullable = false)
-    private Files fileBack;
+    public FishQDTO convertToDTO() {
+        FishQDTO fishQDTO = new FishQDTO();
+
+        fishQDTO.setSetId(this.getSet().getSetId());
+        fishQDTO.setFtpWordsPath(this.getFile().getFtpPath());
+
+        return fishQDTO;
+    }
 }

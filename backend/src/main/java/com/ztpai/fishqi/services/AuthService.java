@@ -29,7 +29,8 @@ public class AuthService {
         Customer signedInCustomer = this.customerSharedService.getCustomerByEmail(customer.getEmail());
         String access = this.jwtTokenUtil.generateToken(signedInCustomer.getEmail(),
                 signedInCustomer.getIs_admin());
-        String refresh = this.jwtTokenUtil.generateRefreshToken(signedInCustomer.getEmail(), signedInCustomer.getIs_admin());
+        String refresh = this.jwtTokenUtil.generateRefreshToken(signedInCustomer.getEmail(),
+                signedInCustomer.getIs_admin());
 
         return new JwtDTO(access, refresh);
     }
@@ -38,5 +39,10 @@ public class AuthService {
         String access = this.jwtTokenUtil.refreshAccessToken(refresh.getRefreshToken());
 
         return new RefreshDTO(refresh.getRefreshToken(), access);
+    }
+
+    public boolean validateToken(RefreshDTO refresh) throws ExpiredRefreshTokenException {
+        return this.jwtTokenUtil.validateToken(refresh.getRefreshToken(),
+                this.jwtTokenUtil.getSubjectFromToken(refresh.getRefreshToken()));
     }
 }

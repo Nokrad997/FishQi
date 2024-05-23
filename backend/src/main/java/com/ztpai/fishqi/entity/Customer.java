@@ -12,7 +12,7 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -38,7 +38,7 @@ public class Customer {
 
     public CustomerDTO convertToDTO() {
         CustomerDTO dto = new CustomerDTO();
-        dto.setUser_id(this.getUser_id());
+        dto.setUserId(this.getUserId());
         dto.setEmail(this.getEmail());
         dto.setPassword(this.getPassword());
         dto.setUsername(this.getUsername());
