@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './Navbar.scss';
+import useAuth from '../../hooks/useAuth';
 
 interface Props {
 	onSignUpClick: () => void;
@@ -7,13 +8,24 @@ interface Props {
 	onAccountClick: () => void;
 	onCreateSetClick: () => void;
 	onSearchClick: () => void;
+	onAdminClick: () => void;
 }
 
-const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick, onCreateSetClick, onSearchClick }) => {
+const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick, onCreateSetClick, onSearchClick, onAdminClick }) => {
 	const logoutHandler = () => {
 		localStorage.clear();
 		location.reload();
 	}
+	const [isAdmin, setIsAdmin] = useState(false);
+	const { checkIfAdmin } = useAuth();
+
+	useEffect(()=> {
+		const response = checkIfAdmin();
+		Promise.resolve(response).then((response) => {
+			setIsAdmin(response);
+		});
+	}, []);
+
 	return (
 		<nav className='navBar'>
 			{localStorage.getItem('access') ?
@@ -21,6 +33,7 @@ const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick,
 					<button className='logRegButton' onClick={logoutHandler}>Logout</button>
 					<button className='logRegButton' onClick={onAccountClick}>Account</button>
 					<button className='logRegButton' onClick={onCreateSetClick}>Create Set</button>
+					{isAdmin ? <button className='logRegButton' onClick={onAdminClick}>Admin</button> : null}
 				</div>
 				:
 				<div className='logRegLayout'>

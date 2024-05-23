@@ -1,6 +1,6 @@
 import RegistrationData from "../interfaces/RegistrationData";
 import LoginData from "../interfaces/LoginData";
-import { signUp, signIn } from "./axios";
+import { signUp, signIn, api } from "./axios";
 
 type RegistrationPrimise = {
     id: number;
@@ -70,3 +70,13 @@ export async function login(customerData: LoginData): Promise<LoginPromise> {
         }
     }
 }
+
+export async function isAdmin(): Promise<boolean> {
+    try {
+        const response = await api.post("auth/checkifadmin");
+        
+        return response.data;
+    } catch(error: any) {
+       return false;
+    }
+};

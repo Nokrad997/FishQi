@@ -42,6 +42,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
       setFile(null);
       setInputs([]);
       setNextKey(0);
+      setError('');
     } else {
       if (words !== undefined && typeof words === 'object' && words !== null) {
         let i = 0;
@@ -77,9 +78,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
   ): void => {
     const word = passedWord || '';
     const translation = passedTranslation || '';
-    const newKey = nextKey; // Zapisz klucz w zmiennej, aby móc go prześledzić
 
-    console.log('Generated key:', newKey); // Wyświetl klucz w konsoli
     if (key != null) setInputs((inputs) => [...inputs, { key: key, word: word, translation: translation }]);
     else setInputs((inputs) => [...inputs, { key: nextKey, word: word, translation: translation }]);
     setNextKey((prevKey) => prevKey + 1);
@@ -102,6 +101,19 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let errorFlag = false;
+      await inputs.map(({ word, translation }) => {
+        if (word === '' || translation === '') {
+          errorFlag = true;
+          setError('Word and translation cannot be empty');
+        } else if(word.length > 20 || translation.length > 20) {
+          errorFlag = true;
+          setError('Word and translation cannot be longer than 20 characters');
+        }
+      });
+
+      if(errorFlag) return;
+
       const setData = {
         title: (document.getElementById('title') as HTMLInputElement).value,
         language: (document.getElementById('language') as HTMLInputElement).value,

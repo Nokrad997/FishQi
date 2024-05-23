@@ -1,5 +1,5 @@
 // import { useState } from 'react'
-import { registration, login } from '../api/auth';
+import { registration, login, isAdmin } from '../api/auth';
 import RegistrationData from '../interfaces/RegistrationData'
 import LoginData from '../interfaces/LoginData'
 
@@ -28,7 +28,17 @@ const useAuth = () => {
         }
     }
 
-    return { registerCustomer, loginCustomer };
+    const checkIfAdmin =  async () => {
+        try {
+            const response = await isAdmin();
+
+            return response;
+        } catch(error: any) {
+            return false;
+        }
+    }
+
+    return { registerCustomer, loginCustomer, checkIfAdmin };
 }
 
 export default useAuth;

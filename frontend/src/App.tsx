@@ -1,7 +1,4 @@
-// src/App.tsx
-
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/home/Home';
 import Navbar from './components/navbar/Navbar';
@@ -14,6 +11,7 @@ import { SetViewModal } from './components/SetViewModal/SetViewModal';
 import ErrorBox from './components/ErrorBox/ErrorBox';
 import { SearchModal } from './components/SearchModal/SearchModal';
 import useFishQSet from './hooks/useFisQSet';
+import AdminModal from './components/AdminModal/AdminModal';
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -22,6 +20,7 @@ const App: React.FC = () => {
       setSetsData(response);
       setIsLoading(false);
     };
+
     const checkSession = async () => {
       if (localStorage.getItem('access') != null) {
         try {
@@ -40,8 +39,8 @@ const App: React.FC = () => {
   }, []);
 
   const { getSets } = useFishQSet();
-  const [editData, setEditData] = useState<editData | null>(null);
-  const [viewData, setViewData] = useState<ViewData | null>(null);
+  const [editData, setEditData] = useState<any | null>(null);
+  const [viewData, setViewData] = useState<any | null>(null);
   const [setsData, setSetsData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
@@ -53,6 +52,7 @@ const App: React.FC = () => {
     createSetModal: boolean;
     setViewModal: boolean;
     searchModal: boolean;
+    adminModal: boolean;
   }>({
     registerModal: false,
     loginModal: false,
@@ -60,6 +60,7 @@ const App: React.FC = () => {
     createSetModal: false,
     setViewModal: false,
     searchModal: false,
+    adminModal: false,
   });
 
   useEffect(() => {
@@ -84,7 +85,8 @@ const App: React.FC = () => {
     }
 
     if (modalName === 'setViewModal' && data) {
-      if (data.fishQs.length != 0) setViewData(data);
+      console.log(data);
+      if (data.fishQs.length !== 0) setViewData(data);
       else setError('No flashCards found for this set');
     } else {
       setViewData(null);
@@ -97,10 +99,7 @@ const App: React.FC = () => {
   };
 
   return isLoading ? (
-    <div>
-      {' '}
-      <p> loading</p>
-    </div>
+    <div>Loading...</div>
   ) : (
     <Router>
       <Navbar
@@ -109,6 +108,7 @@ const App: React.FC = () => {
         onAccountClick={() => toggleModal('accountModal')}
         onCreateSetClick={() => toggleModal('createSetModal')}
         onSearchClick={() => toggleModal('searchModal')}
+        onAdminClick={() => toggleModal('adminModal')}
       />
       <Routes>
         <Route
@@ -139,7 +139,9 @@ const App: React.FC = () => {
         isOpen={modalVisibility.searchModal}
         onClose={() => toggleModal('searchModal')}
         setsData={setsData}
+        onViewClick={(data) => toggleModal('setViewModal', data)}
       />
+      <AdminModal isOpen={modalVisibility.adminModal} onClose={() => toggleModal('adminModal')} />
       <ErrorBox error={error} />
     </Router>
   );

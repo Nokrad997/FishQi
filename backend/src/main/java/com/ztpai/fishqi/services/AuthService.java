@@ -1,6 +1,7 @@
 package com.ztpai.fishqi.services;
 
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.ztpai.fishqi.DTO.JwtDTO;
@@ -44,5 +45,9 @@ public class AuthService {
     public boolean validateToken(RefreshDTO refresh) throws ExpiredRefreshTokenException {
         return this.jwtTokenUtil.validateToken(refresh.getRefreshToken(),
                 this.jwtTokenUtil.getSubjectFromToken(refresh.getRefreshToken()));
+    }
+
+    public boolean checkIfAdmin(Authentication auth) {
+        return this.customerSharedService.getCustomerByEmail(auth.getName()).getIs_admin();
     }
 }

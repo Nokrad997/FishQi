@@ -3,6 +3,7 @@ package com.ztpai.fishqi.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +60,15 @@ public class AuthController {
         try {
             return ResponseEntity.ok().body(this.authService.validateToken(refresh));
         }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/checkifadmin", produces = "application/json")
+    public ResponseEntity<?> checkIfAdmin(Authentication auth) {
+        try{
+            return ResponseEntity.ok().body(this.authService.checkIfAdmin(auth));
+        }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
