@@ -38,10 +38,28 @@
   .setDetails {
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    select {
+
+      width: 15vw;
+    }
   }
 
   .setDescription {
-    height: 10vh;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 10px;
+    textarea {
+      width: 100%;
+      height: calc(100% - 20px); /* Adjust to fit inside the container */
+      padding: 10px;
+      box-sizing: border-box;
+      resize: none;
+      border-radius: 25px;
+    }
   }
 
   .reject-icon {

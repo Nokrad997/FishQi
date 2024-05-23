@@ -1,0 +1,14 @@
+.error-box {
+    height: 15vh;
+    width: 15vw;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    border-radius: 0.25rem;
+    text-align: center;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 0%;
+    left: 42%;
+}

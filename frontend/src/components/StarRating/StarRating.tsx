@@ -2,16 +2,22 @@ import React, { useEffect, useState } from 'react';
 import Star from './Star';
 import './StarRating.scss';
 
-const StarRating = ({ onRatingChange, initialRating }) => {
+interface Props {
+  onRatingChange?: (rating: number) => void;
+  initialRating?: number | null;
+
+}
+
+const StarRating: React.FC<Props> = ({ onRatingChange, initialRating }) => {
     const [rating, setRating] = useState(initialRating || 0);
   
     useEffect(() => {
-      if (initialRating !== undefined) {
+      if (initialRating !== undefined && initialRating !== null) {
         setRating(initialRating);
       }
     }, [initialRating]);
   
-    const handleClick = (newRating) => {
+    const handleClick = (newRating: number) => {
       setRating(newRating);
       if (onRatingChange) {
         onRatingChange(newRating);

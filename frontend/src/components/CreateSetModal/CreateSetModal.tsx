@@ -44,8 +44,11 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
       setNextKey(0);
     } else {
       if (words !== undefined && typeof words === 'object' && words !== null) {
+        let i = 0;
         Object.entries(words).forEach(([key, value]) => {
-          addFishQHandler(key, value);
+          console.log(key, value);
+          addFishQHandler(key, value, i);
+          i++;
         });
       }
     }
@@ -59,14 +62,26 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
   };
 
   const triggerFileInput = (): void => {
-    document.getElementById('fileInput').click();
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+      fileInput.click();
+    } else {
+      console.error("Element with id 'fileInput' not found.");
+    }
   };
 
-  const addFishQHandler = (passedWord: string | null, passedTranslation: string | null): void => {
+  const addFishQHandler = (
+    passedWord: string | null = '',
+    passedTranslation: string | null = '',
+    key: number | null,
+  ): void => {
     const word = passedWord || '';
     const translation = passedTranslation || '';
+    const newKey = nextKey; // Zapisz klucz w zmiennej, aby móc go prześledzić
 
-    setInputs((inputs) => [...inputs, { key: nextKey, word: word, translation: translation }]);
+    console.log('Generated key:', newKey); // Wyświetl klucz w konsoli
+    if (key != null) setInputs((inputs) => [...inputs, { key: key, word: word, translation: translation }]);
+    else setInputs((inputs) => [...inputs, { key: nextKey, word: word, translation: translation }]);
     setNextKey((prevKey) => prevKey + 1);
   };
 
@@ -197,8 +212,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
             </div>
 
             <div className="setDescription">
-              <input
-                type="text"
+              <textarea
                 id="description"
                 placeholder="Write description for this set"
                 defaultValue={description}
@@ -219,7 +233,7 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
             ))}
           </div>
 
-          <button type="button" onClick={addFishQHandler}>
+          <button type="button" onClick={() => addFishQHandler(null, null, null)}>
             <img src="src/assets/icons/add.png" alt="addFishQ" width={40} />
           </button>
           {error && <div className="error-message">{error}</div>}

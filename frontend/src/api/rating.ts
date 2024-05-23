@@ -2,7 +2,7 @@ import { api } from "./axios";
 
 export async function getRatings () {
     try {
-        const response = api.get('/rating/')
+        const response = await api.get('/rating/')
         console.log(response);
         return response;
     } catch(error: any) {
@@ -15,7 +15,7 @@ export async function getRatings () {
 export async function sendRating (data: RatingData) {
     try {
         console.log(data);
-        const response = api.post('/rating/', data, {
+        const response = await api.post('/rating/', data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             }
@@ -33,7 +33,7 @@ export async function sendRating (data: RatingData) {
 export async function editRating (data: RatingData) {
     try {
         console.log("edit")
-        const response = api.put(`/rating/`, data, {
+        const response = await api.put(`/rating/`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             }

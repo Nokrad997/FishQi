@@ -20,9 +20,10 @@ interface editData {
 interface HomeProps {
   onEditClick: (data: editData) => void;
   onViewClick: (data: ViewData) => void;
+  setsDatas: any;
 }
 
-const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick }) => {
+const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
   const { getSets } = useFishQSet();
   const { getPhotoFromFtp, getWordsFromFtp } = useFiles();
   const { retrieveFishqs } = useFishQ();
@@ -30,18 +31,17 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick }) => {
   const { getAllRatings, createRating, updateRating } = useRating();
 
   const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
-  console.log(userId);
   const [sets, setSets] = useState([]);
   const [mostPopularSets, setMostPopularSets] = useState([]);
   const [highestRatingSets, setHighestRatingSets] = useState([]);
   const [mySets, setMySets] = useState([]);
   const [myStarredSets, setMyStarredSets] = useState([]);
+  const setsData = setsDatas;
 
   useEffect(() => {
     const fetchSetsAndPhotos = async () => {
       try {
-        const setsData = await getSets();
-        const photosPromises = setsData.map((set) =>
+        const photosPromises = setsData.map((set: any) =>
           set.ftpImagePath ? getPhotoFromFtp(set.ftpImagePath) : defaultImage,
         );
         const photosResults = await Promise.all(photosPromises);
@@ -295,6 +295,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick }) => {
                 description={set.description}
                 photo={set.photo}
                 rating={set.rating.score}
+                language={set.language}
                 mySets={false}
                 onViewClick={() => handleViewClick(set)}
               />
@@ -311,6 +312,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick }) => {
                 description={set.description}
                 photo={set.photo}
                 rating={set.rating.score}
+                language={set.language}
                 mySets={false}
                 onViewClick={() => handleViewClick(set)}
               />
@@ -327,6 +329,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick }) => {
                 description={set.description}
                 photo={set.photo}
                 rating={set.rating.score}
+                language={set.language}
                 mySets={true}
                 onEditClick={() =>
                   handleEditClick(
@@ -354,6 +357,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick }) => {
                 title={set.title}
                 owner={set.owner}
                 description={set.description}
+                language={set.language}
                 photo={set.photo}
                 rating={set.rating.score}
                 mySets={false}

@@ -5,6 +5,7 @@ interface Props {
   title: string;
   owner: string;
   description: string;
+  language: string;
   rating?: number;
   photo?: string;
   onEditClick?: () => void;
@@ -12,7 +13,7 @@ interface Props {
   mySets: boolean;
 }
 
-const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, mySets, onEditClick, onViewClick }) => {
+const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, language, mySets, onEditClick, onViewClick }) => {
   return (
     <div className="card">
       <div className="card-body">
@@ -23,6 +24,7 @@ const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, m
         </div>
 
         <p className="card-description">{description}</p>
+        <p className="card-language"> {language} </p>
         {rating ? (
           <div className="card-rating">
             <img src={star} width={30} />

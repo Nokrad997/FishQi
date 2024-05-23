@@ -6,9 +6,10 @@ interface Props {
 	onSignInClick: () => void;
 	onAccountClick: () => void;
 	onCreateSetClick: () => void;
+	onSearchClick: () => void;
 }
 
-const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick, onCreateSetClick }) => {
+const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick, onCreateSetClick, onSearchClick }) => {
 	const logoutHandler = () => {
 		localStorage.clear();
 		location.reload();
@@ -31,7 +32,7 @@ const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick,
 				<h1> FishQi</h1>
 			</div>
 			<div className='searchBar'>
-				<input className='search' type='text' placeholder='Search for fish...' />
+				<button className='search' onClick={onSearchClick}> search for fishQ </button>
 			</div>
 		</nav>
 	)

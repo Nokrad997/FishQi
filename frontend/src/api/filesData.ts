@@ -54,7 +54,7 @@ export async function updateFilesOnFtp(data: FilesData) {
     if (data.photo) formData.append('photo', data.photo, data.photo.name);
     formData.append('fishqs', JSON.stringify(data.fishqs));
 
-    const response = api.put(`files/update/${data.setId}`, formData, {
+    const response = await api.put(`files/update/${data.setId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
