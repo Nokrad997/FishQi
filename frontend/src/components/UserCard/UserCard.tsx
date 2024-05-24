@@ -1,15 +1,20 @@
+// UserCard.tsx
+
 import React, { useState, useEffect } from 'react';
 import UserData from "../../interfaces/UserData";
 import './UserCard.scss';
+import useUserDetails from '../../hooks/useUserDetails';
 
 interface Props {
   userData: UserData;
+  onDelete: (userId: number) => void;
 }
 
-const UserCard: React.FC<Props> = ({ userData }) => {
+const UserCard: React.FC<Props> = ({ userData, onDelete }) => {
   const [username, setUsername] = useState(userData.username);
   const [email, setEmail] = useState(userData.email);
   const [role, setRole] = useState(userData.is_admin ? "Admin" : "User");
+  const { updateUser, deleteUser } = useUserDetails();
   const [isEdited, setIsEdited] = useState(false);
 
   useEffect(() => {
@@ -24,13 +29,21 @@ const UserCard: React.FC<Props> = ({ userData }) => {
     }
   }, [username, email, role, userData]);
 
-  const handleSave = () => {
-    
+  const handleSave = async () => {
+    const data = {
+      userId: userData.userId,
+      username: username,
+      email: email,
+      is_admin: role === "Admin" ? true : false,
+    };
+
+    await updateUser(data);
     setIsEdited(false);
   };
 
-  const handleDelete = () => {
-    // Logic to delete the user
+  const handleDelete = async () => {
+    await deleteUser(userData.userId);
+    onDelete(userData.userId);
   };
 
   return (

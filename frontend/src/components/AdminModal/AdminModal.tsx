@@ -1,4 +1,6 @@
-import React from 'react';
+// AdminModal.tsx
+
+import React, { useState } from 'react';
 import UserData from '../../interfaces/UserData';
 import UserCard from '../UserCard/UserCard';
 import './AdminModal.scss';
@@ -10,15 +12,17 @@ interface Props {
 }
 
 const AdminModal: React.FC<Props> = ({ isOpen, onClose, userData }) => {
+  const currentUserId = Number.parseInt(localStorage.getItem("userId") || '');
+  const [filteredUserData, setFilteredUserData] = useState(userData.filter(user => user.userId !== currentUserId));
+
   if (!isOpen) {
     return null;
   }
 
-  const currentUserId = Number.parseInt(localStorage.getItem("userId"));
 
-  const filteredUserData = userData.filter(user => user.userId !== currentUserId);
-
-  console.log(filteredUserData);
+  const handleUserDelete = (deletedUserId: number) => {
+    setFilteredUserData(filteredUserData.filter(user => user.userId !== deletedUserId));
+  };
 
   return (
     <div className="admin-modal">
@@ -28,7 +32,7 @@ const AdminModal: React.FC<Props> = ({ isOpen, onClose, userData }) => {
           <h1> Admin </h1>
           <div className="admin-users">
             {filteredUserData.map((user) => (
-              <UserCard key={user.userId} userData={user} />
+              <UserCard key={user.userId} userData={user} onDelete={handleUserDelete} />
             ))}
           </div>
         </div>

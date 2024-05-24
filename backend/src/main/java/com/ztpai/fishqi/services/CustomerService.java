@@ -1,23 +1,46 @@
 package com.ztpai.fishqi.services;
 
 import java.util.Optional;
-
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
 import com.ztpai.fishqi.DTO.CustomerDTO;
 import com.ztpai.fishqi.DTO.UpdateCustomerDTO;
 import com.ztpai.fishqi.entity.Customer;
+import com.ztpai.fishqi.entity.Files;
+import com.ztpai.fishqi.entity.FishQSet;
+import com.ztpai.fishqi.entity.FishQa;
+import com.ztpai.fishqi.entity.Rating;
 import com.ztpai.fishqi.exceptions.UserAlreadyExistsException;
 import com.ztpai.fishqi.exceptions.UserDoesntExistException;
+import com.ztpai.fishqi.repositories.FilesRepository;
+import com.ztpai.fishqi.repositories.FishQRepository;
+import com.ztpai.fishqi.repositories.FishQSetRepository;
+import com.ztpai.fishqi.repositories.RatingRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CustomerService {
 
     private final CustomerSharedService customerSharedService;
+    private final FilesRepository filesRepository;
+    private final FishQRepository fishQRepository;
+    private final FishQSetRepository fishQSetRepository;
+    private final RatingRepository ratingRepository;
 
-    public CustomerService(CustomerSharedService customerSharedService) {
+    public CustomerService(CustomerSharedService customerSharedService, FilesRepository filesRepository,
+            FishQRepository fishQRepository, FishQSetRepository fishQSetRepository, RatingRepository ratingRepository) {
         this.customerSharedService = customerSharedService;
+        this.filesRepository = filesRepository;
+        this.fishQRepository = fishQRepository;
+        this.fishQSetRepository = fishQSetRepository;
+        this.ratingRepository = ratingRepository;
     }
 
     public CustomerDTO getCustomerByID(Long userId) {
@@ -34,10 +57,10 @@ public class CustomerService {
         return customerDTOs;
     }
 
-    public CustomerDTO getCustomerByEmail(String email) throws UserDoesntExistException{
+    public CustomerDTO getCustomerByEmail(String email) throws UserDoesntExistException {
         Customer customer = this.customerSharedService.getCustomerByEmail(email);
 
-        if(customer == null) {
+        if (customer == null) {
             throw new UserDoesntExistException("User with that email does not exist");
         }
 
@@ -49,10 +72,12 @@ public class CustomerService {
         Customer customer = OptCus.orElseThrow();
 
         String email = requestCustomer.getEmail() == null ? customer.getEmail() : requestCustomer.getEmail();
-        String username = requestCustomer.getUsername() == null ? customer.getUsername() : requestCustomer.getUsername();
-        String password = requestCustomer.getPassword() == "" ? customer.getPassword()
+        String username = requestCustomer.getUsername() == null ? customer.getUsername()
+                : requestCustomer.getUsername();
+        String password = requestCustomer.getPassword() == null ? customer.getPassword()
                 : this.customerSharedService.encodePassword(requestCustomer.getPassword());
-        Boolean is_admin = requestCustomer.getIs_admin() == null ? customer.getIs_admin() : requestCustomer.getIs_admin();
+        Boolean is_admin = requestCustomer.getIs_admin() == null ? customer.getIs_admin()
+                : requestCustomer.getIs_admin();
 
         customer.setEmail(email);
         customer.setUsername(username);
@@ -74,9 +99,46 @@ public class CustomerService {
 
         return savedCustomer.convertToDTO();
     }
-
+    
+    @Transactional
     public void deleteCustomer(Long userId) {
-        this.customerSharedService.deleteCustomer(userId);
+
+        Customer cust = this.customerSharedService.getCustomerById(userId).orElseThrow();
+
+        List<FishQSet> userSets = this.fishQSetRepository.findFishQSetByOwner(cust);
+
+        List<Files> imagesToDelete = userSets.stream()
+                .map(FishQSet::getImage)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        List<FishQa> userFishQs = this.fishQRepository.findFishQaBySetIn(userSets);
+
+        List<Files> filesToDelete = userFishQs.stream()
+                .map(FishQa::getFile)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        List<Long> fileIdsToDelete = filesToDelete.stream()
+                .map(Files::getFileId) 
+                .collect(Collectors.toList());
+        
+        List<Long> imageIdsToDelete = imagesToDelete.stream()
+                .map(Files::getFileId) 
+                .collect(Collectors.toList());
+
+        List<Rating> ratingsToDelete = this.ratingRepository.findAllByFishQSetIn(userSets);
+
+        Set<Long> allFilesToDelete = new HashSet<>();
+        allFilesToDelete.addAll(fileIdsToDelete);
+        allFilesToDelete.addAll(imageIdsToDelete);
+
+        this.ratingRepository.deleteAll(ratingsToDelete);
+        this.fishQRepository.deleteAll(userFishQs);
+        this.fishQSetRepository.deleteAll(userSets);
+        this.filesRepository.deleteAllByIdIn(allFilesToDelete);
+
+        this.customerSharedService.deleteCustomer(cust.getUserId());
     }
 
     public boolean checkIfAdmin(String email) {

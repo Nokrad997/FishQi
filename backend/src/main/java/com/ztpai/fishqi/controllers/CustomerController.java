@@ -83,6 +83,7 @@ public class CustomerController {
                     return ResponseEntity.badRequest().body("You can't update other users");
                 }
             }
+
             CustomerDTO updatedCustomer = customerService.updateCustomer(customer, userId);
 
             return ResponseEntity.ok(updatedCustomer);
@@ -93,7 +94,7 @@ public class CustomerController {
 
         } catch (Exception e) {
 
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }

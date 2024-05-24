@@ -1,4 +1,4 @@
-import { getAll, getUserById, getUserData, getUserDataEmail, updateUserData } from '../api/userData';
+import { deleteUserById, getAll, getUserById, getUserData, getUserDataEmail, updateUserData } from '../api/userData';
 import UserData from '../interfaces/UserData';
 
 const useUserDetails = () => {
@@ -47,7 +47,18 @@ const useUserDetails = () => {
 
       throw new Error(error.message || 'Failed in retreiving user data');
     }
-  }
+  };
+
+  const updateUser = async(user: UserData): Promise<void> => {
+    try {
+      await updateUserData(user);
+
+    } catch (error: any) {
+      console.log('Failed in updating user data: ', error);
+
+      throw new Error(error.message || 'Failed in updating user data');
+    }
+  };
 
   const updateUserDetails = async (user: UserData): Promise<void> => {
     try {
@@ -90,7 +101,19 @@ const useUserDetails = () => {
     }
   };
 
-  return { getUserDetails, updateUserDetails , getUserId, getUserDataByEmail, getAllUsers };
+  const deleteUser = async (id: number) => {
+    try {
+      const response = await deleteUserById(id);
+
+      return response;
+    } catch (error: any) {
+      console.log('Failed in deleting user data: ', error);
+
+      throw new Error(error.message || 'Failed in deleting user data');
+    }
+  };
+
+  return { getUserDetails, updateUserDetails , getUserId, getUserDataByEmail, getAllUsers, updateUser, deleteUser };
 };
 
 export default useUserDetails;

@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.SocketException;
 
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.stereotype.Component;
 
@@ -106,6 +107,55 @@ public class FTPUploader {
                     ex.printStackTrace();
                 }
             }
+        }
+    }
+
+    public void deleteUserCatalog(String remoteFilePath) throws IOException {
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(server, port);
+            int reply = ftpClient.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftpClient.disconnect();
+                throw new IOException("FTP server refused connection, response code: " + reply);
+            }
+
+            if (!ftpClient.login(user, pass)) {
+                ftpClient.logout();
+                throw new IOException("FTP login failed with user: " + user);
+            }
+
+            ftpClient.enterLocalPassiveMode();
+
+            deleteDirectory(ftpClient, remoteFilePath);
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void deleteDirectory(FTPClient ftpClient, String remoteFilePath) throws IOException {
+        FTPFile[] files = ftpClient.listFiles(remoteFilePath);
+
+        for (FTPFile file : files) {
+            String fullPath = remoteFilePath + "/" + file.getName();
+            if (file.isDirectory()) {
+                deleteDirectory(ftpClient, fullPath);
+            } else {
+                if (!ftpClient.deleteFile(fullPath)) {
+                    throw new IOException("Failed to delete file: " + fullPath);
+                }
+            }
+        }
+
+        if (!ftpClient.removeDirectory(remoteFilePath)) {
+            throw new IOException("Failed to remove directory: " + remoteFilePath);
         }
     }
 }

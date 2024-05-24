@@ -63,3 +63,15 @@ export async function getAll() {
     throw new Error(error.message || 'Failed in retreiving users data');
   }
 }
+
+export async function deleteUserById(id: number) {
+  try {
+    const response = await api.delete(`customer/${id}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.log('Failed in deleting user data: ', error);
+
+    throw new Error(error.message || 'Failed in deleting user data');
+  }
+}
