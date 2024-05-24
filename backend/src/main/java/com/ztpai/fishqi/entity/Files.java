@@ -13,9 +13,8 @@ public class Files {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fileId;
 
-    @Column(name = "ftp_path", nullable = false)  // This maps to the actual database column name
-    private String ftpPath;  // Use camelCase here
-
+    @Column(name = "ftp_path", nullable = false) 
+    private String ftpPath;  
     public Files() {}
 
     public Files(String ftpPath) {

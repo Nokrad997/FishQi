@@ -27,7 +27,7 @@ public class FishQSet {
     private Files image;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = true)
+    @JoinColumn(name = "ownerId", nullable = true)
     private Customer owner;
 
     @Column
