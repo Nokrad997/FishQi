@@ -1,4 +1,4 @@
-import { getUserById, getUserData, getUserDataEmail, updateUserData } from '../api/userData';
+import { getAll, getUserById, getUserData, getUserDataEmail, updateUserData } from '../api/userData';
 import UserData from '../interfaces/UserData';
 
 const useUserDetails = () => {
@@ -77,7 +77,20 @@ const useUserDetails = () => {
       throw new Error(error.message || 'Failed in retreiving user data');
     }
   };
-  return { getUserDetails, updateUserDetails , getUserId, getUserDataByEmail };
+
+  const getAllUsers = async () => {
+    try{
+      const response = await getAll();
+
+      return response;
+    } catch(error: any) {
+      console.log('Failed in retreiving users data', error);
+
+      throw new Error(error.message || 'Failed in retreiving users data');
+    }
+  };
+
+  return { getUserDetails, updateUserDetails , getUserId, getUserDataByEmail, getAllUsers };
 };
 
 export default useUserDetails;

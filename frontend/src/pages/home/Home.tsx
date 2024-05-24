@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import HomeCard from '../../components/homeCard/HomeCard';
 import useFiles from '../../hooks/useFiles';
-import useFishQSet from '../../hooks/useFisQSet';
 import './Home.scss';
 import { openTab } from './Tabs';
 import defaultImage from '../../assets/icons/image.png';

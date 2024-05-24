@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import './Navbar.scss';
-import useAuth from '../../hooks/useAuth';
 
 interface Props {
 	onSignUpClick: () => void;
@@ -9,22 +8,14 @@ interface Props {
 	onCreateSetClick: () => void;
 	onSearchClick: () => void;
 	onAdminClick: () => void;
+	isAdmin: boolean;
 }
 
-const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick, onCreateSetClick, onSearchClick, onAdminClick }) => {
+const Navbar: React.FC<Props> = ({ onSignUpClick, onSignInClick, onAccountClick, onCreateSetClick, onSearchClick, onAdminClick, isAdmin }) => {
 	const logoutHandler = () => {
 		localStorage.clear();
 		location.reload();
 	}
-	const [isAdmin, setIsAdmin] = useState(false);
-	const { checkIfAdmin } = useAuth();
-
-	useEffect(()=> {
-		const response = checkIfAdmin();
-		Promise.resolve(response).then((response) => {
-			setIsAdmin(response);
-		});
-	}, []);
 
 	return (
 		<nav className='navBar'>

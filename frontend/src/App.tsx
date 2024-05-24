@@ -12,36 +12,19 @@ import ErrorBox from './components/ErrorBox/ErrorBox';
 import { SearchModal } from './components/SearchModal/SearchModal';
 import useFishQSet from './hooks/useFisQSet';
 import AdminModal from './components/AdminModal/AdminModal';
+import useUserDetails from './hooks/useUserDetails';
+import useAuth from './hooks/useAuth';
+import UserData from './interfaces/UserData';
 
 const App: React.FC = () => {
-  useEffect(() => {
-    const getSetsData = async () => {
-      const response = await getSets();
-      setSetsData(response);
-      setIsLoading(false);
-    };
-
-    const checkSession = async () => {
-      if (localStorage.getItem('access') != null) {
-        try {
-          const response = await validateToken.post('', { refreshToken: localStorage.getItem('refresh') });
-          console.log(response);
-        } catch (error: any) {
-          console.log(error);
-          localStorage.clear();
-          location.reload();
-        }
-      }
-    };
-
-    checkSession();
-    getSetsData();
-  }, []);
-
   const { getSets } = useFishQSet();
+  const { getAllUsers } = useUserDetails();
+  const { checkIfAdmin } = useAuth();
   const [editData, setEditData] = useState<any | null>(null);
   const [viewData, setViewData] = useState<any | null>(null);
   const [setsData, setSetsData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -62,6 +45,45 @@ const App: React.FC = () => {
     searchModal: false,
     adminModal: false,
   });
+
+  useEffect(() => {
+    const getSetsData = async () => {
+      const response = await getSets();
+      setIsLoading(false);
+      setSetsData(response);
+    };
+
+    const checkIfRoleAdmin = async () => {
+      const response = await checkIfAdmin();
+      setIsAdmin(response);
+    };
+
+    const checkSession = async () => {
+      if (localStorage.getItem('access') != null) {
+        try {
+          const response = await validateToken.post('', { refreshToken: localStorage.getItem('refresh') });
+        } catch (error: any) {
+          console.log(error);
+          localStorage.clear();
+          location.reload();
+        }
+      }
+    };
+
+    checkSession();
+    getSetsData();
+    checkIfRoleAdmin();
+  }, []);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      const response = await getAllUsers();
+
+      setUserData(response);
+    };
+    getUserData();
+    console.log(userData)
+  }, [isAdmin]);
 
   useEffect(() => {
     if (error) {
@@ -109,6 +131,7 @@ const App: React.FC = () => {
         onCreateSetClick={() => toggleModal('createSetModal')}
         onSearchClick={() => toggleModal('searchModal')}
         onAdminClick={() => toggleModal('adminModal')}
+        isAdmin={isAdmin}
       />
       <Routes>
         <Route
@@ -141,7 +164,7 @@ const App: React.FC = () => {
         setsData={setsData}
         onViewClick={(data) => toggleModal('setViewModal', data)}
       />
-      <AdminModal isOpen={modalVisibility.adminModal} onClose={() => toggleModal('adminModal')} />
+      <AdminModal isOpen={modalVisibility.adminModal} onClose={() => toggleModal('adminModal')} userData={userData} />
       <ErrorBox error={error} />
     </Router>
   );
