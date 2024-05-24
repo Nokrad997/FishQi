@@ -51,3 +51,15 @@ export async function getUserById(id: number) {
     throw new Error(error.message || 'Failed in retreiving user data');
   }
 }
+
+export async function getAll() {
+  try {
+    const response = await api.get('customer/');
+    console.log(response);
+    return response.data;
+  } catch(error: any) {
+    console.log('Failed in retreiving users data: ', error);
+
+    throw new Error(error.message || 'Failed in retreiving users data');
+  }
+}
