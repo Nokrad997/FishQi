@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FTPUploader {
-    private String server = "localhost";
+    private String server = "172.21.0.3";
     private int port = 21;
     private String user = "root";
     private String pass = "root";
@@ -21,23 +21,31 @@ public class FTPUploader {
     public void uploadFile(InputStream inputStream, String remoteFilePath) throws IOException {
         FTPClient ftpClient = new FTPClient();
         try {
+            System.out.println("Attempting to upload file to: " + remoteFilePath);
             ftpClient.connect(server, port);
             int reply = ftpClient.getReplyCode();
+            System.out.println("FTP server reply code: " + reply);
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftpClient.disconnect();
                 throw new IOException("FTP server refused connection, response code: " + reply);
             }
+
+            System.out.println("Connected to FTP server");
 
             if (!ftpClient.login(user, pass)) {
                 ftpClient.logout();
                 throw new IOException("FTP login failed with user: " + user);
             }
 
+            System.out.println("Logged in successfully");
+
             ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
             ftpClient.enterLocalPassiveMode();
 
             String[] pathElements = remoteFilePath.split("/");
             String path = "";
+
+            System.out.println("Path elements: " + pathElements);
             for (int i = 0; i < pathElements.length - 1; i++) {
                 path = pathElements[i] + "/";
 
@@ -132,6 +140,40 @@ public class FTPUploader {
             ftpClient.removeDirectory(remoteDirectoryPath);
         } catch (IOException e) {
             throw new RuntimeException("Error deleting user catalog", e);
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void deleteSetCatalog(Long userId, Long setId) {
+        String remoteDirectoryPath = "/FISHQI/" + userId + "/" + setId;
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(server, port);
+            int reply = ftpClient.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftpClient.disconnect();
+                throw new IOException("FTP server refused connection, response code: " + reply);
+            }
+
+            if (!ftpClient.login(user, pass)) {
+                ftpClient.logout();
+                throw new IOException("FTP login failed with user: " + user);
+            }
+
+            ftpClient.enterLocalPassiveMode();
+
+            deleteDirectoryContents(ftpClient, remoteDirectoryPath);
+            ftpClient.removeDirectory(remoteDirectoryPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error deleting set catalog", e);
         } finally {
             if (ftpClient.isConnected()) {
                 try {

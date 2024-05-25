@@ -1,4 +1,4 @@
-import { getFishqSets, sendFishQSet, updateFishQSet } from "../api/fishQSetData";
+import { deleteFishQSet, getFishqSets, sendFishQSet, updateFishQSet } from "../api/fishQSetData";
 
 const useFishQSet = () => {
 	const sendSet = async (set: SetData) => {
@@ -40,7 +40,19 @@ const useFishQSet = () => {
 		}
 	};
 
-	return { sendSet, updateSet, getSets };
+	const deleteSet = async (id: number) => {
+		try{
+			const response = await deleteFishQSet(id);
+
+			return response;
+		}catch(error: any) {
+			console.log('Failed in deleting fishq set: ', error);
+
+			throw new Error(error.message || 'Failed in deleting fishq set');
+		}
+	};
+
+	return { sendSet, updateSet, getSets, deleteSet };
 };
 
 export default useFishQSet;

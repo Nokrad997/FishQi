@@ -6,9 +6,11 @@ export default defineConfig({
   plugins: [react()],
   cacheDir: 'node_modules/.vite',
   server: {
+    open: false,
+    host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:81/',
+        target: 'http://localhost:80/',
         changeOrigin: true,
       },
     },

@@ -19,7 +19,6 @@ import com.ztpai.fishqi.repositories.FishQRepository;
 import com.ztpai.fishqi.repositories.FishQSetRepository;
 import com.ztpai.fishqi.repositories.RatingRepository;
 
-import io.jsonwebtoken.io.IOException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -126,5 +125,4 @@ public class CustomerSharedService {
 
         this.ftpUploader.deleteUserCatalog(cust.getUserId());
     }
-
 }

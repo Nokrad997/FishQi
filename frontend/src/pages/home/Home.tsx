@@ -7,6 +7,7 @@ import defaultImage from '../../assets/icons/image.png';
 import useUserDetails from '../../hooks/useUserDetails';
 import useRating from '../../hooks/useRating';
 import useFishQ from '../../hooks/useFishQ';
+import useFishQSet from '../../hooks/useFisQSet';
 
 interface editData {
   title: string;
@@ -25,6 +26,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
   const { getPhotoFromFtp, getWordsFromFtp } = useFiles();
   const { retrieveFishqs } = useFishQ();
+  const { deleteSet } = useFishQSet();
   const { getUserId } = useUserDetails();
   const { getAllRatings, createRating, updateRating } = useRating();
 
@@ -169,6 +171,18 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
     fetchMySets();
     fetchMyStarred();
   }, [sets]);
+
+  const handleDeleteClick = async (setId: number) => {
+    try {
+      await deleteSet(setId);
+      setSets((prevSets) => {
+        const newSets = prevSets.filter((set) => set.setId !== setId);
+        return newSets;
+      });
+    } catch (error) {
+      console.error('Error deleting set:', error);
+    }
+  };
 
   const handleRatingChange = (setId: number, newRating: number) => {
     if (userId === null) {
@@ -345,6 +359,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
                   )
                 }
                 onViewClick={() => handleViewClick(set)}
+                onDeleteClick={() => handleDeleteClick(set.setId)}
               />
             );
           })}

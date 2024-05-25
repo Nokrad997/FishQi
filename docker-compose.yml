@@ -1,6 +1,25 @@
-version: '3.7'
+version: '3'
 
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+      - ftp-server
+    networks:
+      - fishqi_ftp-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - fishqi_ftp-network
+
   ftp-server:
     image: fauria/vsftpd
     environment:
@@ -8,15 +27,15 @@ services:
       FTP_PASS: root
       PASV_MIN_PORT: 21100
       PASV_MAX_PORT: 21110
+      PASV_ADDRESS: "172.21.0.3"
     ports:
       - "21:21"
       - "21100-21110:21100-21110"
     volumes:
       - ./ftpdata:/home/vsftpd
     networks:
-      - ftp-network
+      - fishqi_ftp-network
 
 networks:
-  ftp-network:
-    external: true
-    name: ftp-network
+  fishqi_ftp-network:
+    driver: bridge

@@ -49,11 +49,12 @@ public class CustomerService {
     public CustomerDTO updateCustomer(UpdateCustomerDTO requestCustomer, Long userId) {
         Optional<Customer> OptCus = this.customerSharedService.getCustomerById(userId);
         Customer customer = OptCus.orElseThrow();
+        System.out.println(customer);
 
         String email = requestCustomer.getEmail() == null ? customer.getEmail() : requestCustomer.getEmail();
         String username = requestCustomer.getUsername() == null ? customer.getUsername()
                 : requestCustomer.getUsername();
-        String password = requestCustomer.getPassword() == null ? customer.getPassword()
+        String password = requestCustomer.getPassword() == "" ? customer.getPassword()
                 : this.customerSharedService.encodePassword(requestCustomer.getPassword());
         Boolean is_admin = requestCustomer.getIs_admin() == null ? customer.getIs_admin()
                 : requestCustomer.getIs_admin();
@@ -64,7 +65,7 @@ public class CustomerService {
         customer.setPassword(password);
 
         this.customerSharedService.saveCustomer(customer);
-
+        System.out.println(customer);
         return customer.convertToDTO();
     }
 
