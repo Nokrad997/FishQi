@@ -3,7 +3,7 @@ FishQi is a language flashcards application designed to help users learn and imp
 
 The application exclusively utilizes modals for user interactions, avoiding redirection to subpages. Each visible button serves the purpose of displaying a modal for a specific action. The user experience remains centered on the main page, with the only exception occurring during the logout process when the application requires reloading.
 
-Additionally, the application employs JWT-based authentication for user authorization and interacts with a RESTful API for seamless communication between the frontend and backend.
+Additionally, the application employs JWT-based authentication for user authorization and interacts with a RESTful API for seamless communication between the frontend and backend. Furthermore, it is equipped with Swagger for easy API documentation and testing.
 
 ## App overview
 ### Navbar:
