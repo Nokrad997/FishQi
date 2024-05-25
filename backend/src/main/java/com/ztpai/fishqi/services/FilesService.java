@@ -102,7 +102,7 @@ public class FilesService {
     }
 
     public String getFile(String filePath) throws IOException {
-        String localPath = "src/main/resources/static/temp/";
+        String localPath = "/";
         this.ftpUploader.downloadFile(filePath, localPath);
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
         return localPath + fileName;

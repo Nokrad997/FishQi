@@ -63,6 +63,7 @@
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    margin-right: 10vw;
 }
 
 .card-rating img {
@@ -71,6 +72,7 @@
 
 .card-button {
     margin-left: 10px;
+    margin-right: 10px;
     padding: 0.5rem 1rem;
     border: none;
     background-color: #4CAF50;

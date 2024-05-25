@@ -7,6 +7,7 @@ import defaultImage from '../../assets/icons/image.png';
 import useUserDetails from '../../hooks/useUserDetails';
 import useRating from '../../hooks/useRating';
 import useFishQ from '../../hooks/useFishQ';
+import useFishQSet from '../../hooks/useFisQSet';
 
 interface editData {
   title: string;
@@ -25,6 +26,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
   const { getPhotoFromFtp, getWordsFromFtp } = useFiles();
   const { retrieveFishqs } = useFishQ();
+  const { deleteSet } = useFishQSet();
   const { getUserId } = useUserDetails();
   const { getAllRatings, createRating, updateRating } = useRating();
 
@@ -32,7 +34,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
   const [sets, setSets] = useState([]);
   const [mostPopularSets, setMostPopularSets] = useState([]);
   const [highestRatingSets, setHighestRatingSets] = useState([]);
-  const [mySets, setMySets] = useState([]);
+  const [mySets, setMySets] = useState<any[]>([]);
   const [myStarredSets, setMyStarredSets] = useState([]);
   const setsData = setsDatas;
 
@@ -70,7 +72,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
         }));
 
         const setsWithPhotosAndOwners = await Promise.all(
-          setsData.map(async (set, index) => {
+          setsData.map(async (set: any, index: number) => {
             const ownerUsername = await getUserId(set.owner_id);
             const rating = calculatedRatings.find((r: any) => r.setId === set.setId) || {
               score: 0,
@@ -119,7 +121,8 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
   useEffect(() => {
     const fetchMostPopularSets = async () => {
       try {
-        const popularSets = Array.from(sets).sort((a, b) => b.rating.count - a.rating.count);
+        const publicSets = Array.from(sets).filter((set) => set.visibility === 'public');
+        const popularSets = Array.from(publicSets).sort((a, b) => b.rating.count - a.rating.count);
         setMostPopularSets(popularSets);
       } catch (error) {
         console.error('Error fetching most popular sets:', error);
@@ -128,7 +131,8 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
 
     const fetchHighestRatingSets = async () => {
       try {
-        const highestSets = Array.from(sets).sort((a, b) => b.rating.score - a.rating.score);
+        const publicSets = Array.from(sets).filter((set) => set.visibility === 'public');
+        const highestSets = Array.from(publicSets).sort((a, b) => b.rating.score - a.rating.score);
         setHighestRatingSets(highestSets);
       } catch (error) {
         console.error('Error fetching highest rating sets:', error);
@@ -167,6 +171,18 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
     fetchMySets();
     fetchMyStarred();
   }, [sets]);
+
+  const handleDeleteClick = async (setId: number) => {
+    try {
+      await deleteSet(setId);
+      setSets((prevSets) => {
+        const newSets = prevSets.filter((set) => set.setId !== setId);
+        return newSets;
+      });
+    } catch (error) {
+      console.error('Error deleting set:', error);
+    }
+  };
 
   const handleRatingChange = (setId: number, newRating: number) => {
     if (userId === null) {
@@ -343,6 +359,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
                   )
                 }
                 onViewClick={() => handleViewClick(set)}
+                onDeleteClick={() => handleDeleteClick(set.setId)}
               />
             );
           })}

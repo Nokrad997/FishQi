@@ -45,3 +45,15 @@ export async function getFishqSets(): Promise<setPromise[]> {
     throw new Error(error.message || 'Failed in getting fishq sets');
   }
 }
+
+export async function deleteFishQSet(id: number): Promise<void> {
+  try {
+    const response = await api.delete(`fishqset/${id}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.log('Failed in deleting fishq set: ', error);
+
+    throw new Error(error.message || 'Failed in deleting fishq set');
+  }
+}

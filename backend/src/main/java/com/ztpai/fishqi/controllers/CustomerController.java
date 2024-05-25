@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -131,7 +133,6 @@ public class CustomerController {
             return ResponseEntity.ok("Customer deleted");
 
         } catch (IllegalArgumentException e) {
-
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

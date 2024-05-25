@@ -22,7 +22,7 @@ public class FishQSet {
     @Column(nullable = false)
     private String visibility;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "file_id_image", nullable = true)
     private Files image;
 

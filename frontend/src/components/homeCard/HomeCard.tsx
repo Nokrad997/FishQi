@@ -10,10 +10,11 @@ interface Props {
   photo?: string;
   onEditClick?: () => void;
   onViewClick?: () => void;
+  onDeleteClick?: () => void;
   mySets: boolean;
 }
 
-const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, language, mySets, onEditClick, onViewClick }) => {
+const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, language, mySets, onEditClick, onViewClick, onDeleteClick }) => {
   return (
     <div className="card">
       <div className="card-body">
@@ -40,6 +41,9 @@ const HomeCard: React.FC<Props> = ({ title, owner, description, rating, photo, l
           <button className="card-button" onClick={onEditClick} >Edit</button>
         )}
         <button className="card-button" onClick={onViewClick}>View</button>
+        {mySets && (
+          <button className='card-button' onClick={onDeleteClick} style={{backgroundColor: "red"}}>Delete</button>
+        )}
       </div>
     </div>
   );
