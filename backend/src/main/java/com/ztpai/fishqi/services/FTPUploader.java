@@ -110,7 +110,8 @@ public class FTPUploader {
         }
     }
 
-    public void deleteUserCatalog(String remoteFilePath) throws IOException {
+    public void deleteUserCatalog(Long userId) {
+        String remoteDirectoryPath = "/FISHQI/" + userId;
         FTPClient ftpClient = new FTPClient();
         try {
             ftpClient.connect(server, port);
@@ -127,7 +128,10 @@ public class FTPUploader {
 
             ftpClient.enterLocalPassiveMode();
 
-            deleteDirectory(ftpClient, remoteFilePath);
+            deleteDirectoryContents(ftpClient, remoteDirectoryPath);
+            ftpClient.removeDirectory(remoteDirectoryPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Error deleting user catalog", e);
         } finally {
             if (ftpClient.isConnected()) {
                 try {
@@ -140,22 +144,19 @@ public class FTPUploader {
         }
     }
 
-    private void deleteDirectory(FTPClient ftpClient, String remoteFilePath) throws IOException {
-        FTPFile[] files = ftpClient.listFiles(remoteFilePath);
+    private void deleteDirectoryContents(FTPClient ftpClient, String parentDir) throws IOException {
+        FTPFile[] files = ftpClient.listFiles(parentDir);
 
-        for (FTPFile file : files) {
-            String fullPath = remoteFilePath + "/" + file.getName();
-            if (file.isDirectory()) {
-                deleteDirectory(ftpClient, fullPath);
-            } else {
-                if (!ftpClient.deleteFile(fullPath)) {
-                    throw new IOException("Failed to delete file: " + fullPath);
+        if (files != null && files.length > 0) {
+            for (FTPFile file : files) {
+                String currentFilePath = parentDir + "/" + file.getName();
+                if (file.isDirectory()) {
+                    deleteDirectoryContents(ftpClient, currentFilePath); // Recursively delete subdirectories
+                    ftpClient.removeDirectory(currentFilePath);
+                } else {
+                    ftpClient.deleteFile(currentFilePath);
                 }
             }
-        }
-
-        if (!ftpClient.removeDirectory(remoteFilePath)) {
-            throw new IOException("Failed to remove directory: " + remoteFilePath);
         }
     }
 }

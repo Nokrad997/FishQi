@@ -1,7 +1,6 @@
 package com.ztpai.fishqi.repositories;
 
-import java.util.Set;
-
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +14,7 @@ public interface FilesRepository extends JpaRepository<Files, Long> {
     public Files findByFtpPath(String ftpPath);
 
     @Modifying
-    @Query("DELETE FROM Files f WHERE f.fileId IN :ids")
-    void deleteAllByIdIn(@Param("ids") Set<Long> ids);
+    @Transactional
+    @Query("DELETE FROM Files f WHERE f IN :files")
+    void deleteByFtpPathIn(@Param("files") List<Files> files);
 }

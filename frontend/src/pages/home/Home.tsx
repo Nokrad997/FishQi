@@ -32,7 +32,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
   const [sets, setSets] = useState([]);
   const [mostPopularSets, setMostPopularSets] = useState([]);
   const [highestRatingSets, setHighestRatingSets] = useState([]);
-  const [mySets, setMySets] = useState([]);
+  const [mySets, setMySets] = useState<any[]>([]);
   const [myStarredSets, setMyStarredSets] = useState([]);
   const setsData = setsDatas;
 
@@ -70,7 +70,7 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
         }));
 
         const setsWithPhotosAndOwners = await Promise.all(
-          setsData.map(async (set, index) => {
+          setsData.map(async (set: any, index: number) => {
             const ownerUsername = await getUserId(set.owner_id);
             const rating = calculatedRatings.find((r: any) => r.setId === set.setId) || {
               score: 0,
@@ -119,7 +119,8 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
   useEffect(() => {
     const fetchMostPopularSets = async () => {
       try {
-        const popularSets = Array.from(sets).sort((a, b) => b.rating.count - a.rating.count);
+        const publicSets = Array.from(sets).filter((set) => set.visibility === 'public');
+        const popularSets = Array.from(publicSets).sort((a, b) => b.rating.count - a.rating.count);
         setMostPopularSets(popularSets);
       } catch (error) {
         console.error('Error fetching most popular sets:', error);
@@ -128,7 +129,8 @@ const Home: React.FC<HomeProps> = ({ onEditClick, onViewClick, setsDatas }) => {
 
     const fetchHighestRatingSets = async () => {
       try {
-        const highestSets = Array.from(sets).sort((a, b) => b.rating.score - a.rating.score);
+        const publicSets = Array.from(sets).filter((set) => set.visibility === 'public');
+        const highestSets = Array.from(publicSets).sort((a, b) => b.rating.score - a.rating.score);
         setHighestRatingSets(highestSets);
       } catch (error) {
         console.error('Error fetching highest rating sets:', error);

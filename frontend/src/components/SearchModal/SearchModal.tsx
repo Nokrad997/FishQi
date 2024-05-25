@@ -50,7 +50,8 @@ export const SearchModal: React.FC<Props> = ({ isOpen, onClose, setsData, onView
     if (data && searchValue.length != 0) {
       setSearchResults(
         data.filter((set: any) => {
-          return set[select.value.toLowerCase()].toLowerCase().includes(searchValue);
+          if(set.visibility !== "private")
+            return set[select.value.toLowerCase()].toLowerCase().includes(searchValue);
         }),
       );
     }

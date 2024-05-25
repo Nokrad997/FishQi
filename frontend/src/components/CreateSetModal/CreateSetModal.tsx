@@ -102,17 +102,21 @@ export const CreateSetModal: React.FC<Props> = ({ isOpen, onClose, initialData }
     e.preventDefault();
     try {
       let errorFlag = false;
+      if (inputs.length === 0) {
+        setError('You need to add at least one word and translation');
+        errorFlag = true;
+      }
       await inputs.map(({ word, translation }) => {
         if (word === '' || translation === '') {
           errorFlag = true;
           setError('Word and translation cannot be empty');
-        } else if(word.length > 20 || translation.length > 20) {
+        } else if (word.length > 20 || translation.length > 20) {
           errorFlag = true;
           setError('Word and translation cannot be longer than 20 characters');
         }
       });
 
-      if(errorFlag) return;
+      if (errorFlag) return;
 
       const setData = {
         title: (document.getElementById('title') as HTMLInputElement).value,

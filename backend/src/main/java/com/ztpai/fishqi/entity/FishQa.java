@@ -17,7 +17,7 @@ public class FishQa {
     @JoinColumn(name = "set_id", nullable = false)
     private FishQSet set;
     
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "file_id", nullable = true)
     private Files file;
 
