@@ -57,6 +57,7 @@ Upon opening, the modal loads the user's information into corresponding input fi
 This section includes an input field for entering a new password. Initially, the field remains empty. However, as the user starts typing a new password, a second input field appears, prompting the user to confirm the new password.
 ##### Save and logout Button:
 At the bottom of the modal, there's a button labeled "Save and logout." Clicking this button saves any modifications made to the user's account information, including the updated email, username, and password (if changed) and reloads the page. 
+
 ![Zrzut ekranu 2024-05-25 o 15 14 11](https://github.com/Nokrad997/FishQi/assets/115646961/04e61fc1-f2a1-47d7-aa58-013043aed7bb)
 
 #### Create/edit set
